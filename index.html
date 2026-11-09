@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Señales EUR/USD · práctica en demo</title>
+<meta name="theme-color" content="#0f1722">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--tx:#18202c;--sub:#5b6676;--br:#dde3ea;--ac:#2f6fe4;--up:#12805c;--dn:#c43a31;--wa:#8a5a00;--wabg:#fff3d6;--c2:#eef1f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1722;--card:#18222f;--tx:#e8edf4;--sub:#9aa7b8;--br:#29364a;--ac:#6ea0ff;--up:#4fd1a1;--dn:#ff8a80;--wa:#f1c46b;--wabg:#3a2f12;--c2:#202c3c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:0 max(14px,env(safe-area-inset-right)) 40px max(14px,env(safe-area-inset-left))}
+main{max-width:640px;margin:0 auto}
+h1{font-size:1.35rem;margin:18px 0 2px} h2{font-size:1.05rem;margin:0 0 10px}
+.sub{color:var(--sub);font-size:.9rem;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--br);border-radius:16px;padding:16px;margin:12px 0}
+.fila{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+label{font-size:.85rem;color:var(--sub);display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px}
+select,input,textarea,button{font:inherit}
+select,input[type=number],textarea{background:var(--c2);color:var(--tx);border:1px solid var(--br);border-radius:10px;padding:9px}
+textarea{width:100%;min-height:90px}
+button{border:0;border-radius:12px;padding:12px 16px;font-weight:650;background:var(--ac);color:#fff;min-height:46px;cursor:pointer}
+button.sec{background:var(--c2);color:var(--tx);border:1px solid var(--br)}
+button.mini{padding:7px 12px;min-height:36px;font-size:.88rem}
+.senal{text-align:center;padding:22px 12px;border-radius:16px;border:2px solid var(--br)}
+.senal .g{font-size:2.1rem;font-weight:850;letter-spacing:-.02em}
+.senal.up{border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,var(--card))} .senal.up .g{color:var(--up)}
+.senal.dn{border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,var(--card))} .senal.dn .g{color:var(--dn)}
+.senal .m{color:var(--sub);font-size:.92rem}
+.aviso{background:var(--wabg);color:var(--tx);border-left:4px solid var(--wa);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.92rem}
+.num{font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.k{background:var(--c2);border-radius:12px;padding:10px}.k b{display:block;font-size:1.25rem}.k span{font-size:.8rem;color:var(--sub)}
+svg{width:100%;height:auto;display:block}
+.reg{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--br);font-size:.92rem}
+.gano{color:var(--up);font-weight:700}.perdio{color:var(--dn);font-weight:700}
+.barra{height:10px;background:var(--c2);border-radius:99px;overflow:hidden}.barra i{display:block;height:100%;background:var(--ac)}
+details summary{cursor:pointer;font-weight:650}
+small{color:var(--sub)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left;padding:7px 6px;border-top:1px solid var(--br)}th{color:var(--sub);font-weight:600;font-size:.75rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Señales EUR/USD</h1>
+<p class="sub">Reversión a la media en velas de 10 o 15 minutos. Herramienta de práctica en demo, no es una recomendación de inversión.</p>
+
+<section class="card">
+  <div class="fila">
+    <label>Vencimiento<select id="iv"><option value="15">15 minutos</option><option value="10">10 minutos</option></select></label>
+    <label>Pago de la plataforma %<input id="pago" type="number" min="50" max="100" step="1" value="90"></label>
+  </div>
+  <div class="fila" style="margin-top:12px">
+    <button id="act">Actualizar datos</button>
+    <label style="flex:none;min-width:0;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="auto"> cada 30 s</label>
+  </div>
+  <small id="fuente"></small>
+</section>
+
+<section class="card" id="resultado"><div class="senal"><div class="g">—</div><div class="m">Tocá “Actualizar datos”.</div></div></section>
+
+<section class="card"><h2>Gráfico de las últimas velas</h2><div id="graf"></div>
+<small>Línea: cierre de cada vela. Franja: promedio ± el desvío elegido. La señal aparece cuando el cierre sale de la franja.</small></section>
+
+<section class="card"><h2>Qué dice el historial (2022-2025)</h2><div id="hist"></div></section>
+
+<section class="card">
+  <h2>Mi diario de demo</h2>
+  <p class="sub">Anotá cada operación que hagas en la demo. Es la única forma de saber si la ventaja se mantiene en tu plataforma.</p>
+  <div class="fila"><button id="reg" class="sec">Registrar la señal actual</button><button id="regM" class="sec">Registrar a mano</button></div>
+  <div id="diarioStats" style="margin-top:12px"></div>
+  <div id="diarioLista"></div>
+  <div class="fila" style="margin-top:10px"><button class="sec mini" id="exp">Copiar como texto</button><button class="sec mini" id="bor">Borrar diario</button></div>
+</section>
+
+<section class="card">
+  <details><summary>Cargar velas a mano (si falla la descarga)</summary>
+    <p class="sub" style="margin-top:8px">Pegá los <b>cierres</b> de las últimas 20 o más velas del intervalo elegido, separados por comas, espacios o renglones. El último número debe ser la última vela <b>ya cerrada</b>.</p>
+    <textarea id="manual" placeholder="1.08512, 1.08490, 1.08477, ..."></textarea>
+    <div class="fila" style="margin-top:8px"><button class="sec" id="calcM">Calcular señal</button></div>
+  </details>
+</section>
+
+<section class="card">
+  <details><summary>Cómo se calcula y qué tan confiable es</summary>
+  <p>Cada vela cerrada se compara con el promedio y el desvío de las últimas 20 velas. Si el cierre queda más de 2,5 desvíos <b>por debajo</b>, la señal es <b>comprar</b> (sube); si queda más de 2,5 <b>por encima</b>, <b>vender</b> (baja). La operación entra al abrir la vela siguiente y vence al cerrar esa vela. Es una señal <b>normal</b>. Si además el RSI14 está bajo 30 (o sobre 70) y el estocástico bajo 20 (o sobre 80), es <b>fuerte</b>; si además el desvío de 80 velas supera 1,5, es <b>muy fuerte</b>.</p>
+  <p>Con 4 años de datos reales de EUR/USD, esto acertó entre 53% y 55% de las veces con pago del 90% (equilibrio: 52,6%). Es una ventaja <b>muy pequeña</b>: hay rachas de 10 o más pérdidas seguidas, y la diferencia entre la cotización de tu plataforma, el retraso al entrar y los empates pueden eliminarla.</p>
+  <p>Los datos en vivo vienen de Yahoo Finance con un pequeño retraso. Verificá siempre el precio en tu plataforma antes de operar.</p>
+  </details>
+</section>
+<p class="sub">Solo para práctica con dinero ficticio. Las opciones binarias tienen alto riesgo de pérdida.</p>
+</main>
+
+<script>
+"use strict";
+var $=function(i){return document.getElementById(i)};
+var TZ="America/Argentina/Tucuman";
+// Estadísticas del backtest (EUR/USD 2022-2025, velas de 1 minuto de HistData, empate = pérdida)
+var HIST={"10_normal":{"w":2746,"n":5073,"y":{2022:[54.3,1397],2023:[54.3,1163],2024:[53.7,1288],2025:[54.2,1225]}},"10_fuerte":{"w":1152,"n":2066,"y":{2022:[56.9,561],2023:[54.9,477],2024:[56.2,534],2025:[54.9,494]}},"10_muyfuerte":{"w":995,"n":1786,"y":{2022:[56.3,478],2023:[54.3,405],2024:[56.3,471],2025:[55.8,432]}},"10_volalta":{"w":1240,"n":2310,"y":{2022:[53.8,602],2023:[52.7,543],2024:[51.4,613],2025:[57.1,552]}},"15_normal":{"w":2074,"n":3821,"y":{2022:[53.8,1036],2023:[55.1,870],2024:[55.0,977],2025:[53.4,938]}},"15_fuerte":{"w":850,"n":1526,"y":{2022:[56.5,414],2023:[54.9,344],2024:[56.1,396],2025:[55.1,372]}},"15_muyfuerte":{"w":719,"n":1276,"y":{2022:[56.8,345],2023:[56.6,272],2024:[56.1,328],2025:[55.9,331]}},"15_volalta":{"w":830,"n":1469,"y":{2022:[57.2,369],2023:[55.2,382],2024:[56.3,364],2025:[57.3,354]}}};
+var UM=2.5;
+var estado={velas:[],iv:15,senal:null,fuente:"",manual:false};
+
+function hora(ms,seg){return new Date(ms).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit",second:seg?"2-digit":undefined,timeZone:TZ,hour12:false})}
+function fechaHora(ms){return new Date(ms).toLocaleString("es-AR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:TZ,hour12:false})}
+function wilson(w,n){if(!n)return[0,0];var z=1.96,p=w/n,d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return[c-h,c+h]}
+
+/* ---------- cálculo (idéntico al del backtest: ventana 20, desvío muestral) ---------- */
+function zDe(cierres,i){ // cierres hasta i inclusive
+  if(i<19)return null; var s=0,k; for(k=i-19;k<=i;k++)s+=cierres[k]; var m=s/20,v=0;
+  for(k=i-19;k<=i;k++)v+=(cierres[k]-m)*(cierres[k]-m); var sd=Math.sqrt(v/19);
+  return {z:sd>0?(cierres[i]-m)/sd:0,m:m,sd:sd};
+}
+function rsiDe(c,n){ // igual que pandas ewm(alpha=1/n, adjust=False) sobre las diferencias
+  var al=1/n,up=null,dn=null,r=new Array(c.length).fill(null);
+  for(var i=1;i<c.length;i++){var d=c[i]-c[i-1],u=Math.max(d,0),w=Math.max(-d,0);
+    if(up===null){up=u;dn=w}else{up=al*u+(1-al)*up;dn=al*w+(1-al)*dn}
+    r[i]=100-100/(1+up/(dn+1e-12))}
+  return r;
+}
+function estocDe(h,l,c,i){ if(i<13)return null; var mx=-1e9,mn=1e9; for(var k=i-13;k<=i;k++){mx=Math.max(mx,h[k]);mn=Math.min(mn,l[k])} return 100*(c[i]-mn)/(mx-mn+1e-12) }
+function clasificar(z,rsi,st,completo){
+  var normal=z<=-UM?"up":z>=UM?"dn":null,fuerte=null;
+  if(completo&&rsi!=null&&st!=null){ if(z<=-UM&&rsi<30&&st<20)fuerte="up"; else if(z>=UM&&rsi>70&&st>80)fuerte="dn"; }
+  return {normal:normal,fuerte:fuerte};
+}
+
+/* ---------- datos en vivo (Yahoo 5 min -> 10/15 min) ---------- */
+var YURL="https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?interval=5m&range=5d";
+var RUTAS=[function(u){return u},function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u)},function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u)}];
+function conTiempo(url,ms){var c=new AbortController();var t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal,cache:"no-store"}).finally(function(){clearTimeout(t)})}
+async function bajar(){
+  var ultimo;
+  for(var i=0;i<RUTAS.length;i++){
+    try{var r=await conTiempo(RUTAS[i](YURL),9000); if(!r.ok)throw new Error("HTTP "+r.status);
+      var j=await r.json(); if(!j.chart||!j.chart.result)throw new Error("sin datos"); return j.chart.result[0];}
+    catch(e){ultimo=e}
+  }
+  throw ultimo||new Error("sin conexión");
+}
+function agrupar(res,iv){
+  var ts=res.timestamp,q=res.indicators.quote[0],lado=iv*60,b={},orden=[];
+  for(var i=0;i<ts.length;i++){ if(q.close[i]==null||q.open[i]==null||q.high[i]==null||q.low[i]==null)continue;
+    var k=Math.floor(ts[i]/lado)*lado; if(!b[k]){b[k]={t:k,o:q.open[i],h:q.high[i],l:q.low[i],c:q.close[i],n:0};orden.push(k)}
+    b[k].c=q.close[i]; b[k].h=Math.max(b[k].h,q.high[i]); b[k].l=Math.min(b[k].l,q.low[i]); b[k].n++; }
+  var necesarias=iv/5, ahora=Date.now()/1000, out=[];
+  orden.sort(function(a,c){return a-c}).forEach(function(k){var x=b[k]; if(k+lado<=ahora && x.n>=necesarias-1) out.push(x)}); // solo velas cerradas
+  return out;
+}
+
+async function actualizar(){
+  $("act").disabled=true; $("act").textContent="Descargando…"; $("fuente").textContent="";
+  try{
+    var res=await bajar(); var v=agrupar(res,estado.iv);
+    if(v.length<22)throw new Error("pocas velas");
+    estado.velas=v.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}}); estado.fuente="Yahoo Finance · "+hora(Date.now())+" hs";
+    calcular();
+  }catch(e){
+    $("fuente").textContent="No se pudo descargar ("+e.message+"). Probá de nuevo o cargá las velas a mano abajo.";
+  }
+  $("act").disabled=false; $("act").textContent="Actualizar datos";
+}
+
+/* ---------- mostrar señal ---------- */
+var NIV={muyfuerte:{n:"MUY FUERTE",c:3},fuerte:{n:"FUERTE",c:2},normal:{n:"NORMAL",c:1}};
+function zN(c,i,n){if(i<n-1)return null;var s=0,k;for(k=i-n+1;k<=i;k++)s+=c[k];var m=s/n,v=0;for(k=i-n+1;k<=i;k++)v+=(c[k]-m)*(c[k]-m);var sd=Math.sqrt(v/(n-1));return sd>0?(c[i]-m)/sd:0}
+function ratioVol(h,l,i){ // ATR14 actual / promedio de ATR14 de las últimas 100 velas
+  if(i<112)return null;var a=[],k,j;
+  for(k=i-99;k<=i;k++){var s=0;for(j=k-13;j<=k;j++)s+=h[j]-l[j];a.push(s/14)}
+  var m=a.reduce(function(x,y){return x+y},0)/100;return a[99]/m
+}
+function f2(x){return x==null?"—":x.toFixed(2).replace(".",",")}
+function calcular(){
+  var v=estado.velas,iv=estado.iv; if(v.length<20)return;
+  var completo=!estado.manual&&v[0].h!=null;
+  var c=v.map(function(x){return x.c}),i=c.length-1,r=zDe(c,i);
+  var rs=completo?rsiDe(c,14)[i]:null,st=completo?estocDe(v.map(function(x){return x.h}),v.map(function(x){return x.l}),c,i):null;
+  var z80=completo?zN(c,i,80):null,vr=completo?ratioVol(v.map(function(x){return x.h}),v.map(function(x){return x.l}),i):null;
+  var dir=r.z<=-UM?"up":r.z>=UM?"dn":null,nivel=null;
+  if(dir){nivel="normal";
+    var okF=completo&&(dir==="up"?(rs<30&&st<20):(rs>70&&st>80)); if(okF){nivel="fuerte";
+      if(dir==="up"?z80<=-1.5:z80>=1.5)nivel="muyfuerte"}}
+  var volalta=vr!=null&&vr>1.1;
+  var cierreMs=v[i].t+iv*60000,ahora=Date.now(),edad=(ahora-cierreMs)/60000,venc=!estado.manual&&edad>90;
+  estado.señal={dir:dir,nivel:nivel,z:r.z,precio:c[i],cierreMs:cierreMs,iv:iv,volalta:volalta};
+  var cls=dir||"",g=dir==="up"?"COMPRAR ▲ (sube)":dir==="dn"?"VENDER ▼ (baja)":"SIN SEÑAL",m="";
+  if(estado.manual)m="Cálculo con las velas que cargaste a mano (solo señal normal)."
+  else if(venc)m="Esta vela cerró hace "+Math.round(edad)+" min. "+(dir?"La señal ya venció: esperá la próxima vela.":"Esperá la próxima vela cerrada.")
+  else if(dir)m="Entrá <b>ahora</b>: la vela cerró a las "+hora(cierreMs)+" y la operación vence a las "+hora(cierreMs+iv*60000)+"."
+  else m="Última vela cerrada: "+hora(cierreMs)+". El cierre está dentro de lo normal.";
+  if(venc&&dir){cls="";g="SEÑAL VENCIDA"}
+  var etiqueta=dir&&!venc?"<div class=m style='font-weight:750;letter-spacing:.06em'>SEÑAL "+NIV[nivel].n+" "+"●".repeat(NIV[nivel].c)+"○".repeat(3-NIV[nivel].c)+"</div>":"";
+  var chk=function(ok,tx,val){return "<div class=k><b class=num>"+(ok?"✓ ":"")+val+"</b><span>"+tx+"</span></div>"};
+  var kp=chk(Math.abs(r.z)>=UM,"Desvío (umbral ±2,5)",f2(r.z));
+  if(completo){var up=dir==="up",dn=dir==="dn";
+    kp+=chk(dir&&(up?rs<30:rs>70),"RSI14 (<30 o >70)",f2(rs))+chk(dir&&(up?st<20:st>80),"Estocástico (<20 o >80)",f2(st))
+     +chk(dir&&(up?z80<=-1.5:z80>=1.5),"Desvío 80 velas (±1,5)",f2(z80))+chk(volalta,"Volatilidad vs. normal (>1,10)",f2(vr))}
+  kp+="<div class=k><b class=num>"+c[i].toFixed(5)+"</b><span>Último cierre</span></div>";
+  var hs=cierreMs/3600000%24, hu=new Date(cierreMs).getUTCHours();
+  var aviso="";
+  if(!estado.manual&&edad>120)aviso+="<div class=aviso>Los datos tienen más de 2 horas: el mercado puede estar cerrado (fin de semana).</div>";
+  if(hu>=21&&hu<23)aviso+="<div class=aviso>Horario de bajo volumen (18:00 a 20:00 en Tucumán): el cierre diario de los bancos deja spreads amplios y precios poco confiables. Mejor no operar ahora.</div>";
+  if(dir&&!venc&&volalta&&iv===15)aviso+="<div class=aviso style='border-color:var(--up)'>Hay volatilidad alta. Con esta condición, el desvío 2,5 acertó <b>56,5%</b> históricamente en 15 min.</div>";
+  $("resultado").innerHTML="<div class='senal "+cls+"'><div class=g>"+g+"</div>"+etiqueta+"<div class=m>"+m+"</div><div class='grid2' style='margin-top:14px;text-align:left'>"+kp+"</div></div>"+aviso;
+  $("fuente").textContent=estado.manual?"":"Fuente: "+estado.fuente;
+  dibujar(c);historial();$("reg").disabled=!(dir&&!venc);
+}
+function dibujar(c){
+  var n=Math.min(40,c.length),ini=c.length-n,W=360,H=170,P=8,mn=1e9,mx=-1e9,bandas=[];
+  for(var i=ini;i<c.length;i++){var r=zDe(c,i);var b=r?[r.m-UM*r.sd,r.m+UM*r.sd]:null;bandas.push(b);
+    mn=Math.min(mn,c[i],b?b[0]:1e9);mx=Math.max(mx,c[i],b?b[1]:-1e9)}
+  var X=function(k){return P+k*(W-2*P)/(n-1)},Y=function(p){return H-P-(p-mn)/(mx-mn||1)*(H-2*P)};
+  var lin=function(f){return bandas.map(function(b,k){return b?X(k).toFixed(1)+","+Y(f(b)).toFixed(1):null}).filter(Boolean).join(" ")};
+  var cl=c.slice(ini).map(function(p,k){return X(k).toFixed(1)+","+Y(p).toFixed(1)}).join(" ");
+  var up=lin(function(b){return b[1]}),dn=lin(function(b){return b[0]});
+  $("graf").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Últimas velas con franja de desvío"><polyline points="'+up+'" fill="none" stroke="var(--sub)" stroke-width="1" stroke-dasharray="4 3"/><polyline points="'+dn+'" fill="none" stroke="var(--sub)" stroke-width="1" stroke-dasharray="4 3"/><polyline points="'+cl+'" fill="none" stroke="var(--ac)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(c[c.length-1]).toFixed(1)+'" r="4.5" fill="var(--ac)"/></svg>';
+}
+function pc(x){return (x*100).toFixed(1).replace(".",",")+"%"}
+function historial(){
+  var pago=+$("pago").value/100||.9,eq=1/(1+pago),filas="";
+  [["muyfuerte","Muy fuerte ●●●"],["fuerte","Fuerte ●●○"],["normal","Normal ●○○"],["volalta","Normal + volatilidad alta"]].forEach(function(t){
+    var h=HIST[estado.iv+"_"+t[0]],p=h.w/h.n,ci=wilson(h.w,h.n),ev=p*pago-(1-p);
+    var an=Object.keys(h.y).map(function(a){return h.y[a][0].toFixed(0)}).join(" / ");
+    filas+="<tr><td>"+t[1]+"</td><td class=num><b>"+pc(p)+"</b></td><td class=num>"+pc(ci[0])+"–"+pc(ci[1])+"</td><td class=num>"+(h.n/1000).toFixed(1).replace(".",",")+"</td><td class=num>"+(ev>=0?"+":"")+(ev*100).toFixed(1).replace(".",",")+"%</td><td class=num>"+an+"</td></tr>"});
+  $("hist").innerHTML="<p class=sub>Equilibrio con pago "+Math.round(pago*100)+"%: <b>"+pc(eq)+"</b>. Vencimiento: "+estado.iv+" min.</p><div style='overflow-x:auto'><table><tr><th>Nivel</th><th>Acierto</th><th>Rango</th><th>Señales/día</th><th>Ganancia</th><th>2022/23/24/25</th></tr>"+filas+"</table></div><small>Los niveles suman confirmaciones (RSI, estocástico, desvío de 80 velas). Las diferencias entre niveles son pequeñas frente al margen de error: el diario de tu demo decide cuál rinde mejor.</small>";
+}
+
+/* ---------- diario de demo ---------- */
+var CLAVE="senales.diario.v1";
+function leer(){try{return JSON.parse(localStorage.getItem(CLAVE)||"[]")}catch(e){return[]}}
+function guardar(d){try{localStorage.setItem(CLAVE,JSON.stringify(d))}catch(e){}}
+function diario(){
+  var d=leer(),res=d.filter(function(x){return x.r}),w=res.filter(function(x){return x.r==="g"}).length,n=res.length,pago=+$("pago").value/100||.9,eq=1/(1+pago);
+  var html="";
+  if(n){var p=w/n,ci=wilson(w,n),ev=p*pago-(1-p);
+    html+="<div class=grid2><div class=k><b class=num>"+pc(p)+"</b><span>Tu acierto ("+w+" de "+n+")</span></div><div class=k><b class=num>"+(ev>=0?"+":"")+(ev*100).toFixed(1).replace(".",",")+"%</b><span>Ganancia por operación</span></div></div>"
+    +"<p class=sub style='margin-top:8px'>Rango razonable: "+(ci[0]*100).toFixed(0)+"% a "+(ci[1]*100).toFixed(0)+"%. Equilibrio: "+pc(eq)+".</p>"
+    +"<div class=barra><i style='width:"+Math.min(100,n/300*100)+"%'></i></div><small>"+n+" de 300 operaciones para sacar una conclusión</small>";
+    var por="";["muyfuerte","fuerte","normal"].forEach(function(k){var g=res.filter(function(x){return x.nivel===k});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;por+="<tr><td>"+NIV[k].n+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
+    if(por)html+="<table style='margin-top:10px'><tr><th>Nivel de señal</th><th>Operaciones</th><th>Acierto</th></tr>"+por+"</table>";
+    if(n>=50){var u=res.slice(-50),wu=u.filter(function(x){return x.r==="g"}).length;
+      if(wu/50<0.5)html+="<div class=aviso>En tus últimas 50 operaciones acertaste "+Math.round(wu/50*100)+"%. Puede ser mala racha o que la ventaja no se sostenga en tu plataforma.</div>"}
+    if(n>=300)html+="<div class=aviso>"+(ci[0]>eq?"Con 300+ operaciones tu resultado supera el equilibrio de forma consistente.":"Con 300+ operaciones, tu resultado no supera con claridad el equilibrio: la ventaja no está comprobada en tu plataforma.")+"</div>"}
+  else html="<p class=sub>Todavía no registraste operaciones.</p>";
+  $("diarioStats").innerHTML=html;
+  $("diarioLista").innerHTML=d.slice().reverse().slice(0,30).map(function(x){var idx=d.indexOf(x);
+    var est=x.r?"<span class="+(x.r==="g"?"gano":"perdio")+">"+(x.r==="g"?"Ganó":"Perdió")+"</span>":"<span><button class='mini' data-i='"+idx+"' data-r='g'>Ganó</button> <button class='mini sec' data-i='"+idx+"' data-r='p'>Perdió</button></span>";
+    return "<div class=reg><span>"+fechaHora(x.t)+" · "+(x.d==="up"?"Compra ▲":"Venta ▼")+" · "+x.iv+" min"+(x.nivel?" · "+NIV[x.nivel].n.toLowerCase():"")+"</span>"+est+"</div>"}).join("");
+}
+$("diarioLista").addEventListener("click",function(e){var b=e.target.closest("button[data-i]");if(!b)return;var d=leer();d[+b.dataset.i].r=b.dataset.r;guardar(d);diario()});
+$("reg").onclick=function(){var s=estado.señal;if(!s||!s.dir)return;var d=leer();d.push({t:s.cierreMs,d:s.dir,iv:s.iv,nivel:s.nivel,z:+s.z.toFixed(2),r:null});guardar(d);diario()};
+$("regM").onclick=function(){var d=leer();d.push({t:Date.now(),d:estado.señal&&estado.señal.dir||"up",iv:estado.iv,nivel:null,z:null,r:null});guardar(d);diario()};
+$("exp").onclick=function(){var t="fecha,direccion,vencimiento_min,nivel,z,resultado\n"+leer().map(function(x){return [new Date(x.t).toISOString(),x.d==="up"?"compra":"venta",x.iv,x.nivel||"",x.z==null?"":x.z,x.r==="g"?"gano":x.r==="p"?"perdio":"pendiente"].join(",")}).join("\n");
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){$("exp").textContent="Copiado ✓"},function(){});setTimeout(function(){$("exp").textContent="Copiar como texto"},2000)};
+$("bor").onclick=function(){if($("bor").dataset.c==="1"){guardar([]);diario();$("bor").textContent="Borrar diario";$("bor").dataset.c="0"}else{$("bor").dataset.c="1";$("bor").textContent="Tocá otra vez para confirmar";setTimeout(function(){$("bor").dataset.c="0";$("bor").textContent="Borrar diario"},3500)}};
+
+/* ---------- eventos ---------- */
+$("iv").onchange=function(){estado.iv=+$("iv").value;estado.manual=false;estado.velas=[];historial();actualizar()};
+$("pago").oninput=function(){historial();diario()};
+$("act").onclick=function(){estado.manual=false;actualizar()};
+var timer=null;$("auto").onchange=function(){clearInterval(timer);if($("auto").checked)timer=setInterval(function(){estado.manual=false;actualizar()},30000)};
+$("calcM").onclick=function(){var n=$("manual").value.replace(/,/g," ").split(/\s+/).map(parseFloat).filter(function(x){return isFinite(x)});
+  if(n.length<20){$("fuente").textContent="Necesitás al menos 20 números.";return}
+  var ahora=Date.now(),iv=estado.iv*60000,fin=Math.floor(ahora/iv)*iv; // última vela se asume recién cerrada
+  estado.velas=n.map(function(c,k){return{t:fin-(n.length-k)*iv,c:c}});estado.manual=true;calcular()};
+historial();diario();
+if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(function(){});
+</script>
+</body>
+</html>
