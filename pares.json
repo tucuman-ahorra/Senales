@@ -3,7 +3,7 @@
     15
   ],
   "pago": 0.9,
-  "pausa_seg": 9,
+  "pausa_seg": 8,
   "pares": [
     {
       "nombre": "EUR/USD",
@@ -46,5 +46,6 @@
       "yahoo": "GBPJPY=X"
     }
   ],
-  "modelo_30min": true
+  "modelo_30min": true,
+  "bucle_minutos": 340
 }
