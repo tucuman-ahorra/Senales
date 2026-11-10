@@ -155,7 +155,7 @@ def notificar(tema, titulo, mensaje, prioridad=4):
         topic=tema, title=titulo, message=mensaje, priority=prioridad, tags=["chart_with_upwards_trend"]))
     r.raise_for_status()
 
-def procesar_modelo(nombre, b5, ahora, estado, tema="", escribir=True, avisar=notificar):
+def procesar_modelo(nombre, b5, ahora, estado, tema="", escribir=True, avisar=None):
     """Registra las señales del modelo (con su resultado) y avisa de la que acaba de cerrar. Devuelve (filas, avisos)."""
     g = agrupar(b5, 30, ahora)
     if len(g) < modelo.MIN_VELAS:
@@ -182,7 +182,7 @@ def procesar_modelo(nombre, b5, ahora, estado, tema="", escribir=True, avisar=no
         if edad <= LIMITE_AVISO_MIN and estado.get(f"aviso|{nombre}") != marca:
             pu = r.p if r.dir == 1 else 1 - r.p
             try:
-                avisar(tema, f"{'COMPRAR ▲' if r.dir == 1 else 'VENDER ▼'} {nombre} · 30 min",
+                (avisar or notificar)(tema, f"{'COMPRAR ▲' if r.dir == 1 else 'VENDER ▼'} {nombre} · 30 min",
                        f"Modelo: probabilidad {pu*100:.0f}%. La vela cerró a las {hora_local(cierre)}; entrá ahora y vence a las {hora_local(cierre + pd.Timedelta(minutes=30))} (hora de Tucumán).")
                 estado[f"aviso|{nombre}"] = marca; avisos = 1
             except Exception as e:
@@ -202,16 +202,18 @@ def escribir_modelo(filas):
             parte = parte[[(a, b) not in claves for a, b in zip(parte.par, parte.t_senal)]]
         if len(parte): parte.to_csv(f, mode="a", header=not f.exists(), index=False)
 
-def main():
-    cfg = json.loads((RAIZ / "pares.json").read_text())
-    clave = os.environ.get("TD_KEY", "").strip()
-    print("Fuente:", "Twelve Data (con Yahoo de respaldo)" if clave else "Yahoo Finance (sin clave)", flush=True)
-    ahora = pd.Timestamp.now(tz="UTC"); estado = cargar_estado(); total = 0
+def ahora_utc():
+    return pd.Timestamp.now(tz="UTC")
+
+def dormir(seg):
+    time.sleep(max(0, seg))
+
+def una_pasada(cfg, clave, tema):
+    """Una vuelta completa por todos los pares. Devuelve False si el mercado está cerrado."""
+    ahora = ahora_utc(); estado = cargar_estado(); total = 0
     if mercado_cerrado(ahora) and not os.environ.get("FORZAR"):
-        print("Mercado cerrado (fin de semana): no se consulta nada."); return
-    tema = os.environ.get("NTFY_TOPIC", "").strip() if cfg.get("modelo_30min", True) else ""
-    if cfg.get("modelo_30min", True) and not tema:
-        print("Aviso: no hay NTFY_TOPIC; el modelo se registra pero no se mandan avisos al celular.")
+        print(f"[{ahora:%H:%M}] Mercado cerrado: no se consulta nada.", flush=True); return False
+    print(f"[{ahora:%Y-%m-%d %H:%M:%S} UTC] Pasada nueva", flush=True)
     for p in cfg["pares"]:
         try:
             b5 = bajar(p, clave)
@@ -223,9 +225,48 @@ def main():
                 print(f"  {p['nombre']} modelo 30min: {len(f)} señales registradas, {a} aviso(s)", flush=True)
         except Exception as e:
             print(f"  ERROR {p['nombre']}: {e}", flush=True)
-        time.sleep(cfg.get("pausa_seg", 9))
-    guardar_estado(estado)
-    print("Listo. Filas nuevas:", total)
+        guardar_estado(estado)
+        dormir(cfg.get("pausa_seg", 8))
+    print("Pasada lista. Filas nuevas:", total, flush=True)
+    return True
+
+def guardar_git():
+    """Sube a GitHub lo nuevo de datos/ (así el informe y los registros se ven apenas se generan)."""
+    import subprocess
+    try:
+        subprocess.run([sys.executable, "analizar.py"], cwd=RAIZ, stdout=subprocess.DEVNULL, timeout=180)
+        run = lambda *a: subprocess.run(["git", *a], cwd=RAIZ, capture_output=True, text=True, timeout=120)
+        run("add", "datos")
+        if run("diff", "--staged", "--quiet").returncode == 0: return
+        run("commit", "-m", f"datos {ahora_utc():%Y-%m-%d %H:%M}")
+        run("pull", "--rebase"); r = run("push")
+        if r.returncode: print("  aviso: no se pudo subir:", r.stderr.strip()[:200], flush=True)
+    except Exception as e:
+        print("  aviso: no se pudo subir:", e, flush=True)
+
+def proximo_cierre(ahora):
+    """Próximo cierre de vela de 30 min (hh:00 o hh:30 UTC) más 25 segundos de margen para que el proveedor publique la última vela de 5 min."""
+    return ahora.floor("30min") + pd.Timedelta(minutes=30, seconds=25)
+
+def main():
+    cfg = json.loads((RAIZ / "pares.json").read_text())
+    clave = os.environ.get("TD_KEY", "").strip()
+    print("Fuente:", "Twelve Data (con Yahoo de respaldo)" if clave else "Yahoo Finance (sin clave)", flush=True)
+    tema = os.environ.get("NTFY_TOPIC", "").strip() if cfg.get("modelo_30min", True) else ""
+    if cfg.get("modelo_30min", True) and not tema:
+        print("Aviso: no hay NTFY_TOPIC; el modelo se registra pero no se mandan avisos al celular.", flush=True)
+    if "--bucle" not in sys.argv:
+        una_pasada(cfg, clave, tema); return
+    # Modo bucle: queda trabajando casi 6 horas y corre justo después de cada cierre de vela de 30 min.
+    # GitHub reinicia la tarea solo cada hora (ver escaner.yml); mientras tanto no depende de los atrasos del reloj programado.
+    inicio = ahora_utc(); fin = inicio + pd.Timedelta(minutes=cfg.get("bucle_minutos", 340))
+    una_pasada(cfg, clave, tema); guardar_git()
+    while True:
+        objetivo = proximo_cierre(ahora_utc())
+        if objetivo > fin: break
+        dormir((objetivo - ahora_utc()).total_seconds())
+        una_pasada(cfg, clave, tema); guardar_git()
+    print("Fin del turno; GitHub arranca el siguiente.", flush=True)
 
 if __name__ == "__main__":
     main()
