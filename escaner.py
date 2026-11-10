@@ -5,12 +5,15 @@ Escáner multipar. Cada vez que corre:
   2) las agrupa en velas de 15 min (u otras, ver pares.json) y deja solo las ya cerradas,
   3) calcula los indicadores y el nivel de señal de CADA vela,
   4) registra, para cada vela nueva, cuál habría sido el resultado de entrar en la vela siguiente.
+  5) (opcional) evalúa el MODELO de 30 min de cada par; si marca señal en la vela que acaba de cerrar, manda un aviso
+     al celular con ntfy (ver README) y guarda la señal con su resultado en datos/modelo_AAAA-MM.csv.
 Guarda todo en datos/AAAA-MM.csv. No necesita que nadie anote nada: el resultado es teórico y automático.
 Las velas ya registradas no se repiten, y si se saltea una corrida, la siguiente recupera lo que faltó.
 """
 import os, sys, json, time
 from pathlib import Path
 import numpy as np, pandas as pd, requests
+import modelo
 
 RAIZ = Path(__file__).resolve().parent
 DATOS = RAIZ / "datos"
@@ -131,17 +134,93 @@ def escribir_filas(filas):
         if len(parte):
             parte.to_csv(f, mode="a", header=not f.exists(), index=False)
 
+# ---------------------------------------------------------------- modelo de 30 min + avisos
+COLUMNAS_MOD = ["par", "t_senal", "hora_utc", "p", "dir", "conf", "entrada", "salida", "sube", "empate"]
+LIMITE_AVISO_MIN = 12   # si la vela cerró hace más de esto, el aviso llegaría tarde: no se manda
+
+def mercado_cerrado(ahora):
+    wd, h = ahora.dayofweek, ahora.hour
+    return wd == 5 or (wd == 4 and h >= 22) or (wd == 6 and h < 21)
+
+def hora_local(ts):
+    try:
+        from zoneinfo import ZoneInfo
+        return ts.tz_convert(ZoneInfo("America/Argentina/Tucuman")).strftime("%H:%M")
+    except Exception:
+        return (ts - pd.Timedelta(hours=3)).strftime("%H:%M")
+
+def notificar(tema, titulo, mensaje, prioridad=4):
+    """Aviso push a través de ntfy.sh (gratis; la app ntfy escucha tu tema secreto)."""
+    r = requests.post("https://ntfy.sh/", timeout=20, json=dict(
+        topic=tema, title=titulo, message=mensaje, priority=prioridad, tags=["chart_with_upwards_trend"]))
+    r.raise_for_status()
+
+def procesar_modelo(nombre, b5, ahora, estado, tema="", escribir=True, avisar=notificar):
+    """Registra las señales del modelo (con su resultado) y avisa de la que acaba de cerrar. Devuelve (filas, avisos)."""
+    g = agrupar(b5, 30, ahora)
+    if len(g) < modelo.MIN_VELAS:
+        print(f"  {nombre} modelo: pocas velas ({len(g)})", flush=True); return [], 0
+    ev = modelo.evaluar(g, nombre); t = g.index
+    clave = f"modelo|{nombre}"
+    ultimo = pd.Timestamp(estado[clave]) if clave in estado else None
+    filas = []
+    for i in range(len(g) - 1):
+        ent = t[i + 1]
+        if ultimo is not None and ent <= ultimo: continue
+        if ent - t[i] != pd.Timedelta(minutes=30): continue
+        r = ev.iloc[i]
+        if not r.sen: continue
+        o1, c1 = g.o.iloc[i + 1], g.c.iloc[i + 1]
+        filas.append([nombre, (t[i] + pd.Timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M"), ent.hour, round(r.p, 4),
+                      int(r.dir), round(r.conf, 4), o1, c1, int(c1 > o1), int(c1 == o1)])
+    estado[clave] = t[-1].isoformat()
+    if escribir and filas: escribir_modelo(filas)
+    # aviso de la vela que acaba de cerrar
+    avisos = 0; r = ev.iloc[-1]; cierre = t[-1] + pd.Timedelta(minutes=30)
+    if r.sen and tema:
+        edad = (ahora - cierre).total_seconds() / 60; marca = cierre.strftime("%Y-%m-%d %H:%M")
+        if edad <= LIMITE_AVISO_MIN and estado.get(f"aviso|{nombre}") != marca:
+            pu = r.p if r.dir == 1 else 1 - r.p
+            try:
+                avisar(tema, f"{'COMPRAR ▲' if r.dir == 1 else 'VENDER ▼'} {nombre} · 30 min",
+                       f"Modelo: probabilidad {pu*100:.0f}%. La vela cerró a las {hora_local(cierre)}; entrá ahora y vence a las {hora_local(cierre + pd.Timedelta(minutes=30))} (hora de Tucumán).")
+                estado[f"aviso|{nombre}"] = marca; avisos = 1
+            except Exception as e:
+                print(f"  aviso {nombre}: no se pudo enviar ({e})", flush=True)
+        elif edad > LIMITE_AVISO_MIN:
+            print(f"  {nombre}: señal del modelo, pero cerró hace {edad:.0f} min (muy tarde para avisar)", flush=True)
+    return filas, avisos
+
+def escribir_modelo(filas):
+    DATOS.mkdir(exist_ok=True)
+    df = pd.DataFrame(filas, columns=COLUMNAS_MOD)
+    df["mes"] = df["t_senal"].str[:7]
+    for mes, parte in df.groupby("mes"):
+        f = DATOS / f"modelo_{mes}.csv"; parte = parte.drop(columns="mes")
+        if f.exists():
+            ya = pd.read_csv(f, usecols=["par", "t_senal"]); claves = set(zip(ya.par, ya.t_senal))
+            parte = parte[[(a, b) not in claves for a, b in zip(parte.par, parte.t_senal)]]
+        if len(parte): parte.to_csv(f, mode="a", header=not f.exists(), index=False)
+
 def main():
     cfg = json.loads((RAIZ / "pares.json").read_text())
     clave = os.environ.get("TD_KEY", "").strip()
     print("Fuente:", "Twelve Data (con Yahoo de respaldo)" if clave else "Yahoo Finance (sin clave)", flush=True)
     ahora = pd.Timestamp.now(tz="UTC"); estado = cargar_estado(); total = 0
+    if mercado_cerrado(ahora) and not os.environ.get("FORZAR"):
+        print("Mercado cerrado (fin de semana): no se consulta nada."); return
+    tema = os.environ.get("NTFY_TOPIC", "").strip() if cfg.get("modelo_30min", True) else ""
+    if cfg.get("modelo_30min", True) and not tema:
+        print("Aviso: no hay NTFY_TOPIC; el modelo se registra pero no se mandan avisos al celular.")
     for p in cfg["pares"]:
         try:
             b5 = bajar(p, clave)
             for k in cfg["intervalos"]:
                 n = len(procesar(p["nombre"], b5, k, ahora, estado)); total += n
                 print(f"  {p['nombre']} {k}min: {n} velas nuevas", flush=True)
+            if cfg.get("modelo_30min", True):
+                f, a = procesar_modelo(p["nombre"], b5, ahora, estado, tema)
+                print(f"  {p['nombre']} modelo 30min: {len(f)} señales registradas, {a} aviso(s)", flush=True)
         except Exception as e:
             print(f"  ERROR {p['nombre']}: {e}", flush=True)
         time.sleep(cfg.get("pausa_seg", 9))

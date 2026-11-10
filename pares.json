@@ -1,17 +1,50 @@
 {
-  "intervalos": [15],
-  "pago": 0.90,
+  "intervalos": [
+    15
+  ],
+  "pago": 0.9,
   "pausa_seg": 9,
   "pares": [
-    {"nombre": "EUR/USD", "yahoo": "EURUSD=X"},
-    {"nombre": "GBP/USD", "yahoo": "GBPUSD=X"},
-    {"nombre": "USD/JPY", "yahoo": "JPY=X"},
-    {"nombre": "USD/CHF", "yahoo": "CHF=X"},
-    {"nombre": "AUD/USD", "yahoo": "AUDUSD=X"},
-    {"nombre": "USD/CAD", "yahoo": "CAD=X"},
-    {"nombre": "NZD/USD", "yahoo": "NZDUSD=X"},
-    {"nombre": "EUR/GBP", "yahoo": "EURGBP=X"},
-    {"nombre": "EUR/JPY", "yahoo": "EURJPY=X"},
-    {"nombre": "GBP/JPY", "yahoo": "GBPJPY=X"}
-  ]
+    {
+      "nombre": "EUR/USD",
+      "yahoo": "EURUSD=X"
+    },
+    {
+      "nombre": "GBP/USD",
+      "yahoo": "GBPUSD=X"
+    },
+    {
+      "nombre": "USD/JPY",
+      "yahoo": "JPY=X"
+    },
+    {
+      "nombre": "USD/CHF",
+      "yahoo": "CHF=X"
+    },
+    {
+      "nombre": "AUD/USD",
+      "yahoo": "AUDUSD=X"
+    },
+    {
+      "nombre": "USD/CAD",
+      "yahoo": "CAD=X"
+    },
+    {
+      "nombre": "NZD/USD",
+      "yahoo": "NZDUSD=X"
+    },
+    {
+      "nombre": "EUR/GBP",
+      "yahoo": "EURGBP=X"
+    },
+    {
+      "nombre": "EUR/JPY",
+      "yahoo": "EURJPY=X"
+    },
+    {
+      "nombre": "GBP/JPY",
+      "yahoo": "GBPJPY=X"
+    }
+  ],
+  "modelo_30min": true
 }

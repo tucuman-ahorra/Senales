@@ -43,10 +43,29 @@ def cargar():
     d["gana"] = (((d["dir"] == 1) & (d.sube == 1)) | ((d["dir"] == -1) & (d.sube == 0))) & (d.empate == 0)
     return d
 
+def seccion_modelo():
+    """Resultados en vivo del modelo de 30 minutos (datos/modelo_AAAA-MM.csv): la prueba que falta."""
+    fs = sorted(glob.glob(str(DATOS / "modelo_*.csv")))
+    if not fs: return ["## Modelo de 30 minutos (en vivo)", "", "Todavía no hay señales registradas.", ""]
+    m = pd.concat([pd.read_csv(f) for f in fs], ignore_index=True).drop_duplicates(["par", "t_senal"])
+    m["gana"] = (((m["dir"] == 1) & (m.sube == 1)) | ((m["dir"] == -1) & (m.sube == 0))) & (m.empate == 0)
+    n = len(m); w = int(m.gana.sum()); p = w / n; lo, hi = wilson(w, n); ev = p * PAGO - (1 - p)
+    if n < 100: lect = "muy pocas señales: todavía no se puede afirmar nada (hacen falta 300 o más)"
+    elif lo > EQ: lect = "supera el equilibrio con margen estadístico"
+    elif hi < EQ: lect = "por debajo del equilibrio"
+    else: lect = "no se puede afirmar nada todavía"
+    out = ["## Modelo de 30 minutos (en vivo)", "",
+           "Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, que el modelo nunca vio al entrenar), con su resultado teórico. **Esta es la prueba real.**", "",
+           f"**Total:** {n} señales · acierto **{p*100:.1f}%** (rango {lo*100:.1f}% a {hi*100:.1f}%) · ganancia esperada {ev*100:+.1f}% por operación · equilibrio {EQ*100:.1f}% → {lect}.", "",
+           "| Par | Señales | Acierto |", "|---|---|---|"]
+    for par, g in m.groupby("par"): out.append(f"| {par} | {len(g)} | {g.gana.mean()*100:.1f}% |")
+    out.append("")
+    return out
+
 def main():
     d = cargar()
     if d is None:
-        txt = "# Informe\n\nTodavía no hay datos registrados.\n"
+        txt = "# Informe\n\nTodavía no hay datos registrados.\n\n" + "\n".join(seccion_modelo()) + "\n"
         DATOS.mkdir(exist_ok=True); (DATOS / "informe.md").write_text(txt); print(txt); return
     dias = d.t_senal.str[:10].nunique(); desde, hasta = d.t_senal.min(), d.t_senal.max()
     filas = []
@@ -100,6 +119,7 @@ def main():
     out.append("")
     out.append("> Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). "
                "No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.")
+    out += seccion_modelo()
     txt = "\n".join(out) + "\n"
     DATOS.mkdir(exist_ok=True); (DATOS / "informe.md").write_text(txt); print(txt)
 
