@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Señales EUR/USD · práctica en demo</title>
+<title>Señales de divisas · práctica en demo</title>
 <meta name="theme-color" content="#0f1722">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
@@ -43,10 +43,11 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
 </head>
 <body>
 <main>
-<h1>Señales EUR/USD</h1>
+<h1>Señales <span id="tPar">EUR/USD</span></h1>
 <p class="sub">Reversión a la media en velas de 10 o 15 minutos. Herramienta de práctica en demo, no es una recomendación de inversión.</p>
 
 <section class="card">
+  <div class="fila" style="margin-bottom:12px"><label>Par de divisas<select id="par"></select></label></div>
   <div class="fila">
     <label>Vencimiento<select id="iv"><option value="15">15 minutos</option><option value="10">10 minutos</option></select></label>
     <label>Pago de la plataforma %<input id="pago" type="number" min="50" max="100" step="1" value="90"></label>
@@ -55,8 +56,10 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
     <button id="act">Actualizar datos</button>
     <label style="flex:none;min-width:0;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="auto"> Actualizar solo al cerrar cada vela</label>
   </div>
+  <div class="fila" style="margin-top:10px"><button class="sec" id="todos">Buscar señales en todos los pares</button></div>
   <small id="fuente"></small>
 </section>
+<section class="card" id="barrido" hidden></section>
 
 <section class="card">
   <details id="conf"><summary>Conectar datos en vivo (recomendado)</summary>
@@ -77,12 +80,12 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
 <section class="card"><h2>Gráfico de las últimas velas</h2><div id="graf"></div>
 <small>Línea: cierre de cada vela. Franja: promedio ± el desvío elegido. La señal aparece cuando el cierre sale de la franja.</small></section>
 
-<section class="card"><h2>Qué dice el historial (2022-2025)</h2><div id="hist"></div></section>
+<section class="card"><h2>Qué dice el historial (2022-2025, EUR/USD)</h2><div id="hist"></div></section>
 
 <section class="card">
   <h2>Mi diario de demo</h2>
   <p class="sub">Anotá cada operación que hagas en la demo. Es la única forma de saber si la ventaja se mantiene en tu plataforma.</p>
-  <div class="fila"><label style="flex:none;min-width:150px">Mercado de la operación<select id="mk"><option value="real">Real (EUR/USD)</option><option value="otc">OTC (plataforma)</option></select></label></div>
+  <div class="fila"><label style="flex:none;min-width:150px">Mercado de la operación<select id="mk"><option value="real">Real (mercado)</option><option value="otc">OTC (plataforma)</option></select></label></div>
   <div class="fila" style="margin-top:8px"><button id="reg" class="sec">Registrar la señal actual</button><button id="regM" class="sec">Registrar a mano</button></div>
   <div id="diarioStats" style="margin-top:12px"></div>
   <div id="diarioLista"></div>
@@ -130,7 +133,10 @@ var TZ="America/Argentina/Tucuman";
 // Estadísticas del backtest (EUR/USD 2022-2025, velas de 1 minuto de HistData, empate = pérdida)
 var HIST={"10_normal":{"w":2746,"n":5073,"y":{2022:[54.3,1397],2023:[54.3,1163],2024:[53.7,1288],2025:[54.2,1225]}},"10_fuerte":{"w":1152,"n":2066,"y":{2022:[56.9,561],2023:[54.9,477],2024:[56.2,534],2025:[54.9,494]}},"10_muyfuerte":{"w":995,"n":1786,"y":{2022:[56.3,478],2023:[54.3,405],2024:[56.3,471],2025:[55.8,432]}},"10_volalta":{"w":1240,"n":2310,"y":{2022:[53.8,602],2023:[52.7,543],2024:[51.4,613],2025:[57.1,552]}},"15_normal":{"w":2074,"n":3821,"y":{2022:[53.8,1036],2023:[55.1,870],2024:[55.0,977],2025:[53.4,938]}},"15_fuerte":{"w":850,"n":1526,"y":{2022:[56.5,414],2023:[54.9,344],2024:[56.1,396],2025:[55.1,372]}},"15_muyfuerte":{"w":719,"n":1276,"y":{2022:[56.8,345],2023:[56.6,272],2024:[56.1,328],2025:[55.9,331]}},"15_volalta":{"w":830,"n":1469,"y":{2022:[57.2,369],2023:[55.2,382],2024:[56.3,364],2025:[57.3,354]}}};
 var UM=2.5;
-var estado={velas:[],iv:15,senal:null,fuente:"",manual:false};
+var PARES=[{n:"EUR/USD",y:"EURUSD=X",d:5},{n:"GBP/USD",y:"GBPUSD=X",d:5},{n:"USD/JPY",y:"JPY=X",d:3},{n:"USD/CHF",y:"CHF=X",d:5},{n:"AUD/USD",y:"AUDUSD=X",d:5},{n:"USD/CAD",y:"CAD=X",d:5},{n:"NZD/USD",y:"NZDUSD=X",d:5},{n:"EUR/GBP",y:"EURGBP=X",d:5},{n:"EUR/JPY",y:"EURJPY=X",d:3},{n:"GBP/JPY",y:"GBPJPY=X",d:3}];
+var CLAVE_PAR="senales.par.v1";
+function parGuardado(){try{var n=localStorage.getItem(CLAVE_PAR);for(var i=0;i<PARES.length;i++)if(PARES[i].n===n)return PARES[i]}catch(e){}return PARES[0]}
+var estado={velas:[],iv:15,senal:null,fuente:"",manual:false,par:parGuardado()};
 
 function hora(ms,seg){return new Date(ms).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit",second:seg?"2-digit":undefined,timeZone:TZ,hour12:false})}
 function fechaHora(ms){return new Date(ms).toLocaleString("es-AR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",timeZone:TZ,hour12:false})}
@@ -157,22 +163,22 @@ function clasificar(z,rsi,st,completo){
 }
 
 /* ---------- datos en vivo: Twelve Data (con clave) o Yahoo (sin clave) -> velas de 5 min -> 10/15 min ---------- */
-var YURL="https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?interval=5m&range=5d";
+function yurl(par){return "https://query1.finance.yahoo.com/v8/finance/chart/"+par.y+"?interval=5m&range=5d"}
 var RUTAS=[function(u){return u},function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u)},function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u)}];
 var CLAVE_TD="senales.td.v1";
 function claveTD(){try{return localStorage.getItem(CLAVE_TD)||""}catch(e){return""}}
 function conTiempo(url,ms){var c=new AbortController();var t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal,cache:"no-store"}).finally(function(){clearTimeout(t)})}
 function msgError(e){var m=String(e&&e.message||e);if(/abort/i.test(m))return"tardó demasiado en responder";if(/Failed to fetch|NetworkError|Load failed/i.test(m))return"sin conexión o bloqueado por el navegador";return m}
-async function bajarTD(clave){
-  var u="https://api.twelvedata.com/time_series?symbol=EUR/USD&interval=5min&outputsize=900&timezone=UTC&order=ASC&apikey="+encodeURIComponent(clave);
+async function bajarTD(clave,par){
+  var u="https://api.twelvedata.com/time_series?symbol="+encodeURIComponent(par.n)+"&interval=5min&outputsize=900&timezone=UTC&order=ASC&apikey="+encodeURIComponent(clave);
   var r=await conTiempo(u,15000); var j=await r.json();
   if(j.status==="error"||!j.values)throw new Error("Twelve Data: "+(j.message||"respuesta inválida"));
   return j.values.map(function(x){return{t:Date.parse(x.datetime.replace(" ","T")+"Z")/1000,o:+x.open,h:+x.high,l:+x.low,c:+x.close}}).filter(function(x){return isFinite(x.c)&&isFinite(x.t)}).sort(function(a,b){return a.t-b.t});
 }
-async function bajarYahoo(){
+async function bajarYahoo(par){
   var errores=[];
   for(var i=0;i<RUTAS.length;i++){
-    try{var r=await conTiempo(RUTAS[i](YURL),8000); if(!r.ok)throw new Error("HTTP "+r.status);
+    try{var r=await conTiempo(RUTAS[i](yurl(par)),8000); if(!r.ok)throw new Error("HTTP "+r.status);
       var j=await r.json(); if(!j.chart||!j.chart.result)throw new Error("sin datos"); var res=j.chart.result[0],q=res.indicators.quote[0],out=[];
       for(var k=0;k<res.timestamp.length;k++){if(q.close[k]==null||q.open[k]==null||q.high[k]==null||q.low[k]==null)continue;out.push({t:res.timestamp[k],o:q.open[k],h:q.high[k],l:q.low[k],c:q.close[k]})}
       return out;}
@@ -180,10 +186,10 @@ async function bajarYahoo(){
   }
   throw new Error("Yahoo no respondió ("+errores.join(" / ")+")");
 }
-async function bajar(){
+async function bajar(par){
   var clave=claveTD();
-  if(clave){estado.origen="Twelve Data";return await bajarTD(clave)}
-  estado.origen="Yahoo Finance";return await bajarYahoo();
+  if(clave){estado.origen="Twelve Data";return await bajarTD(clave,par)}
+  estado.origen="Yahoo Finance";return await bajarYahoo(par);
 }
 function agrupar(barras,iv){
   var lado=iv*60,b={},orden=[];
@@ -198,12 +204,12 @@ function agrupar(barras,iv){
 async function actualizar(){
   $("act").disabled=true; $("act").textContent="Descargando…"; $("fuente").textContent="";
   try{
-    var barras=await bajar(); var v=agrupar(barras,estado.iv);
+    var par=estado.par,barras=await bajar(par); if(par!==estado.par)return; var v=agrupar(barras,estado.iv);
     if(v.length<22)throw new Error("llegaron pocas velas ("+v.length+")");
-    estado.velas=v.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}}); estado.fuente=estado.origen+" · "+hora(Date.now())+" hs";
+    estado.velas=v.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}}); estado.fuente=par.n+" · "+estado.origen+" · "+hora(Date.now())+" hs";
     calcular();
   }catch(e){
-    $("fuente").textContent="No se pudo descargar: "+msgError(e)+". "+(claveTD()?"Revisá tu clave de Twelve Data o probá de nuevo.":"Conectá la clave gratuita de arriba (más estable) o cargá las velas a mano.");
+    $("fuente").textContent="No se pudo descargar "+estado.par.n+": "+msgError(e)+". "+(claveTD()?"Revisá tu clave de Twelve Data o probá de nuevo.":"Conectá la clave gratuita de arriba (más estable) o cargá las velas a mano.");
   }
   $("act").disabled=false; $("act").textContent="Actualizar datos";
 }
@@ -237,7 +243,7 @@ function calcular(){
       if(dir==="up"?z80<=-1.5:z80>=1.5)nivel="muyfuerte"}}
   var volalta=vr!=null&&vr>1.1;
   var cierreMs=v[i].t+iv*60000,ahora=Date.now(),edad=(ahora-cierreMs)/60000,venc=!estado.manual&&edad>90;
-  estado.señal={dir:dir,nivel:nivel,z:r.z,precio:c[i],cierreMs:cierreMs,iv:iv,volalta:volalta};
+  estado.señal={dir:dir,nivel:nivel,z:r.z,precio:c[i],cierreMs:cierreMs,iv:iv,volalta:volalta,par:estado.par.n};
   var cls=dir||"",g=dir==="up"?"COMPRAR ▲ (sube)":dir==="dn"?"VENDER ▼ (baja)":"SIN SEÑAL",m="";
   if(estado.manual)m="Cálculo con las velas que cargaste a mano (solo señal normal)."
   else if(venc)m="Esta vela cerró hace "+Math.round(edad)+" min. "+(dir?"La señal ya venció: esperá la próxima vela.":"Esperá la próxima vela cerrada.")
@@ -250,12 +256,12 @@ function calcular(){
   if(completo){var up=dir==="up",dn=dir==="dn";
     kp+=chk(dir&&(up?rs<30:rs>70),"RSI14 (<30 o >70)",f2(rs))+chk(dir&&(up?st<20:st>80),"Estocástico (<20 o >80)",f2(st))
      +chk(dir&&(up?z80<=-1.5:z80>=1.5),"Desvío 80 velas (±1,5)",f2(z80))+chk(volalta,"Volatilidad vs. normal (>1,10)",f2(vr))}
-  kp+="<div class=k><b class=num>"+c[i].toFixed(5)+"</b><span>Último cierre</span></div>";
+  kp+="<div class=k><b class=num>"+c[i].toFixed(estado.par.d)+"</b><span>Último cierre</span></div>";
   var hs=cierreMs/3600000%24, hu=new Date(cierreMs).getUTCHours();
   var aviso="";
   if(!estado.manual&&edad>120)aviso+="<div class=aviso>Los datos tienen más de 2 horas: el mercado puede estar cerrado (fin de semana).</div>";
   if(hu>=21&&hu<23)aviso+="<div class=aviso>Horario de bajo volumen (18:00 a 20:00 en Tucumán): el cierre diario de los bancos deja spreads amplios y precios poco confiables. Mejor no operar ahora.</div>";
-  if(dir&&!venc&&volalta&&iv===15)aviso+="<div class=aviso style='border-color:var(--up)'>Hay volatilidad alta. Con esta condición, el desvío 2,5 acertó <b>56,5%</b> históricamente en 15 min.</div>";
+  if(dir&&!venc&&volalta&&iv===15&&estado.par.n==="EUR/USD")aviso+="<div class=aviso style='border-color:var(--up)'>Hay volatilidad alta. Con esta condición, el desvío 2,5 acertó <b>56,5%</b> históricamente en 15 min.</div>";
   $("resultado").innerHTML="<div class='senal "+cls+"'><div class=g>"+g+"</div>"+etiqueta+"<div class=m>"+m+"</div><div class='grid2' style='margin-top:14px;text-align:left'>"+kp+"</div></div>"+aviso;
   $("fuente").textContent=estado.manual?"":"Fuente: "+estado.fuente;
   dibujar(c);historial();$("reg").disabled=!(dir&&!venc);
@@ -273,6 +279,7 @@ function dibujar(c){
 function pc(x){return (x*100).toFixed(1).replace(".",",")+"%"}
 function historial(){
   var pago=+$("pago").value/100||.9,eq=1/(1+pago),filas="";
+  if(estado.par.n!=="EUR/USD"){$("hist").innerHTML="<p class=sub>Equilibrio con pago "+Math.round(pago*100)+"%: <b>"+pc(eq)+"</b>.</p><div class=aviso>El historial 2022-2025 lo calculé solo con EUR/USD. Para <b>"+estado.par.n+"</b> todavía no hay estadística propia: no sabemos si esta señal acierta más o menos que el equilibrio. El escáner de GitHub la va juntando (archivo <b>datos/informe.md</b>) y tu diario también.</div>";return}
   [["muyfuerte","Muy fuerte ●●●"],["fuerte","Fuerte ●●○"],["normal","Normal ●○○"],["volalta","Normal + volatilidad alta"]].forEach(function(t){
     var h=HIST[estado.iv+"_"+t[0]],p=h.w/h.n,ci=wilson(h.w,h.n),ev=p*pago-(1-p);
     var an=Object.keys(h.y).map(function(a){return h.y[a][0].toFixed(0)}).join("/");
@@ -293,6 +300,8 @@ function diario(){
     +"<div class=barra><i style='width:"+Math.min(100,n/300*100)+"%'></i></div><small>"+n+" de 300 operaciones para sacar una conclusión</small>";
     var por="";["muyfuerte","fuerte","normal"].forEach(function(k){var g=res.filter(function(x){return x.nivel===k});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;por+="<tr><td>"+NIV[k].n+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
     var pm="";["real","otc"].forEach(function(k){var g=res.filter(function(x){return (x.mk||"real")===k});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;pm+="<tr><td>"+(k==="otc"?"OTC":"Real")+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
+    var pp="";PARES.forEach(function(q){var g=res.filter(function(x){return (x.p||"EUR/USD")===q.n});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;pp+="<tr><td>"+q.n+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
+    if(pp)html+="<table style='margin-top:10px'><tr><th>Par</th><th>Operaciones</th><th>Acierto</th></tr>"+pp+"</table><small>Con pocas operaciones por par, la diferencia entre pares es casi puro azar.</small>";
     if(pm)html+="<table style='margin-top:10px'><tr><th>Mercado</th><th>Operaciones</th><th>Acierto</th></tr>"+pm+"</table>";
     if(por)html+="<table style='margin-top:10px'><tr><th>Nivel de señal</th><th>Operaciones</th><th>Acierto</th></tr>"+por+"</table>";
     if(n>=50){var u=res.slice(-50),wu=u.filter(function(x){return x.r==="g"}).length;
@@ -302,12 +311,12 @@ function diario(){
   $("diarioStats").innerHTML=html;
   $("diarioLista").innerHTML=d.slice().reverse().slice(0,30).map(function(x){var idx=d.indexOf(x);
     var est=x.r?"<span class="+(x.r==="g"?"gano":"perdio")+">"+(x.r==="g"?"Ganó":"Perdió")+"</span>":"<span><button class='mini' data-i='"+idx+"' data-r='g'>Ganó</button> <button class='mini sec' data-i='"+idx+"' data-r='p'>Perdió</button></span>";
-    return "<div class=reg><span>"+fechaHora(x.t)+" · "+(x.d==="up"?"Compra ▲":"Venta ▼")+" · "+x.iv+" min"+(x.nivel?" · "+NIV[x.nivel].n.toLowerCase():"")+(x.mk==="otc"?" · OTC":"")+"</span>"+est+"</div>"}).join("");
+    return "<div class=reg><span>"+fechaHora(x.t)+" · "+(x.p||"EUR/USD")+" · "+(x.d==="up"?"Compra ▲":"Venta ▼")+" · "+x.iv+" min"+(x.nivel?" · "+NIV[x.nivel].n.toLowerCase():"")+(x.mk==="otc"?" · OTC":"")+"</span>"+est+"</div>"}).join("");
 }
 $("diarioLista").addEventListener("click",function(e){var b=e.target.closest("button[data-i]");if(!b)return;var d=leer();d[+b.dataset.i].r=b.dataset.r;guardar(d);diario()});
-$("reg").onclick=function(){var s=estado.señal;if(!s||!s.dir)return;var d=leer();d.push({t:s.cierreMs,d:s.dir,iv:s.iv,nivel:s.nivel,mk:$("mk").value,z:+s.z.toFixed(2),r:null});guardar(d);diario()};
-$("regM").onclick=function(){var d=leer();d.push({t:Date.now(),d:estado.señal&&estado.señal.dir||"up",iv:estado.iv,nivel:null,mk:$("mk").value,z:null,r:null});guardar(d);diario()};
-$("exp").onclick=function(){var t="fecha,direccion,vencimiento_min,nivel,mercado,z,resultado\n"+leer().map(function(x){return [new Date(x.t).toISOString(),x.d==="up"?"compra":"venta",x.iv,x.nivel||"",x.mk||"real",x.z==null?"":x.z,x.r==="g"?"gano":x.r==="p"?"perdio":"pendiente"].join(",")}).join("\n");
+$("reg").onclick=function(){var s=estado.señal;if(!s||!s.dir)return;var d=leer();d.push({t:s.cierreMs,p:s.par,d:s.dir,iv:s.iv,nivel:s.nivel,mk:$("mk").value,z:+s.z.toFixed(2),r:null});guardar(d);diario()};
+$("regM").onclick=function(){var d=leer();d.push({t:Date.now(),p:estado.par.n,d:estado.señal&&estado.señal.dir||"up",iv:estado.iv,nivel:null,mk:$("mk").value,z:null,r:null});guardar(d);diario()};
+$("exp").onclick=function(){var t="fecha,par,direccion,vencimiento_min,nivel,mercado,z,resultado\n"+leer().map(function(x){return [new Date(x.t).toISOString(),x.p||"EUR/USD",x.d==="up"?"compra":"venta",x.iv,x.nivel||"",x.mk||"real",x.z==null?"":x.z,x.r==="g"?"gano":x.r==="p"?"perdio":"pendiente"].join(",")}).join("\n");
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){$("exp").textContent="Copiado ✓"},function(){});setTimeout(function(){$("exp").textContent="Copiar como texto"},2000)};
 $("bor").onclick=function(){if($("bor").dataset.c==="1"){guardar([]);diario();$("bor").textContent="Borrar diario";$("bor").dataset.c="0"}else{$("bor").dataset.c="1";$("bor").textContent="Tocá otra vez para confirmar";setTimeout(function(){$("bor").dataset.c="0";$("bor").textContent="Borrar diario"},3500)}};
 
@@ -346,7 +355,49 @@ $("sDiario").onclick=function(){
   $("sRes").innerHTML="<div class=grid2><div class=k><b class=num>$"+m(c)+"</b><span>Capital ficticio actual</span></div><div class=k><b class=num>$"+m(dd)+"</b><span>Mayor caída desde un pico</span></div></div><p class=sub style='margin-top:8px'>Con "+res.length+" operaciones de tu diario, a $"+mo+" cada una.</p>";
   $("sGraf").innerHTML=curva([],ar,cap);
 };
+/* ---------- buscar en todos los pares ---------- */
+function evaluar(v,iv){
+  var c=v.map(function(x){return x.c}),h=v.map(function(x){return x.h}),l=v.map(function(x){return x.l}),i=c.length-1,r=zDe(c,i);if(!r)return null;
+  var rs=rsiDe(c,14)[i],st=estocDe(h,l,c,i),z80=zN(c,i,80),dir=r.z<=-UM?"up":r.z>=UM?"dn":null,nivel=null;
+  if(dir){nivel="normal";if(dir==="up"?(rs<30&&st<20):(rs>70&&st>80)){nivel="fuerte";if(dir==="up"?z80<=-1.5:z80>=1.5)nivel="muyfuerte"}}
+  return {dir:dir,nivel:nivel,z:r.z,cierreMs:v[i].t*1000+iv*60000};
+}
+var cachePar={},enBarrido=false;
+function esperar(ms){return new Promise(function(r){setTimeout(r,ms)})}
+$("todos").onclick=async function(){
+  var box=$("barrido");box.hidden=false;
+  if(!claveTD()){box.innerHTML="<div class=aviso>Para revisar varios pares seguidos hace falta la clave gratuita de Twelve Data (arriba, “Conectar datos en vivo”). Sin clave, los servicios sin registro se bloquean.</div>";return}
+  if(enBarrido)return;enBarrido=true;$("todos").disabled=true;
+  var res=[],fallos=[],iv=estado.iv;
+  for(var k=0;k<PARES.length;k++){var q=PARES[k];
+    box.innerHTML="<h2>Buscando señales…</h2><p class=sub>Par "+(k+1)+" de "+PARES.length+": "+q.n+". Tarda cerca de 1 minuto y medio (el plan gratuito permite 8 consultas por minuto).</p><div class=barra><i style='width:"+(k/PARES.length*100)+"%'></i></div>";
+    try{var b=await bajarTD(claveTD(),q),v=agrupar(b,iv);if(v.length<22)throw new Error("pocas velas");
+      var e=evaluar(v,iv);cachePar[q.n]={velas:v,origen:"Twelve Data · "+hora(Date.now())+" hs"};res.push({par:q,e:e})}
+    catch(err){fallos.push(q.n+" ("+msgError(err)+")")}
+    if(k<PARES.length-1)await esperar(9000)}
+  var con=res.filter(function(x){return x.e&&x.e.dir}).sort(function(a,b){return Math.abs(b.e.z)-Math.abs(a.e.z)}),sin=res.length-con.length,ahora=Date.now();
+  var html="<h2>Resultado ("+iv+" min)</h2>";
+  if(con.length){html+="<p class=sub>Tocá un par para abrirlo. Ordenados por qué tan lejos salió el cierre.</p>";
+    con.forEach(function(x){var edad=(ahora-x.e.cierreMs)/60000,venc=edad>90;
+      html+="<div class=reg><span><b>"+x.par.n+"</b> · "+(x.e.dir==="up"?"Compra ▲":"Venta ▼")+" · "+NIV[x.e.nivel].n.toLowerCase()+" · desvío "+f2(x.e.z)+(venc?" · vencida":"")+"</span><button class='mini' data-par='"+x.par.n+"'>Abrir</button></div>"})}
+  else html+="<p class=sub>Ningún par tiene señal en este momento.</p>";
+  html+="<p class=sub style='margin-top:8px'>Sin señal: "+sin+" pares.</p>"+(fallos.length?"<div class=aviso>No se pudieron bajar: "+fallos.join(", ")+".</div>":"")
+    +"<small>Ojo: cuantos más pares mirás, más señales aparecen solo por azar. Solo EUR/USD tiene estadística histórica propia; en los demás pares no sabemos todavía si la señal supera el equilibrio. Anotalas en el diario para averiguarlo.</small>";
+  box.innerHTML=html;enBarrido=false;$("todos").disabled=false;
+};
+$("barrido").addEventListener("click",function(e){var b=e.target.closest("button[data-par]");if(!b)return;var c=cachePar[b.dataset.par];if(!c)return;
+  elegirPar(b.dataset.par,true);estado.manual=false;estado.velas=c.velas.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}});estado.fuente=b.dataset.par+" · "+c.origen;calcular();window.scrollTo({top:0,behavior:"smooth"})});
+
 /* ---------- eventos ---------- */
+function elegirPar(n,sinBajar){
+  var q=PARES.filter(function(x){return x.n===n})[0]||PARES[0];estado.par=q;estado.velas=[];estado.manual=false;
+  try{localStorage.setItem(CLAVE_PAR,q.n)}catch(e){}
+  $("par").value=q.n;$("tPar").textContent=q.n;historial();
+  if(!sinBajar){$("resultado").innerHTML="<div class=senal><div class=g>—</div><div class=m>Descargando "+q.n+"…</div></div>";$("graf").innerHTML="";actualizar()}
+}
+$("par").innerHTML=PARES.map(function(q){return "<option>"+q.n+"</option>"}).join("");
+$("par").value=estado.par.n;$("tPar").textContent=estado.par.n;
+$("par").onchange=function(){elegirPar($("par").value)};
 $("iv").onchange=function(){estado.iv=+$("iv").value;estado.manual=false;estado.velas=[];historial();actualizar()};
 $("pago").oninput=function(){historial();diario()};
 $("act").onclick=function(){estado.manual=false;actualizar()};
