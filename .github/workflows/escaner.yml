@@ -2,8 +2,8 @@ name: Escaner de senales
 
 on:
   schedule:
-    - cron: "2,32 * * * *"    # cada 30 minutos (minutos 2 y 32, hora UTC): justo después de cerrar cada vela de 30 min
-  workflow_dispatch:          # permite correrlo a mano desde la pestaña Actions
+    - cron: "7 * * * *"       # cada hora: si ya hay una corrida en curso, esta queda esperando y arranca apenas termine la otra
+  workflow_dispatch:          # permite arrancarlo a mano desde la pestaña Actions
 
 permissions:
   contents: write
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   escanear:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 355      # cada corrida trabaja casi 6 horas seguidas (el máximo de GitHub)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,17 +23,18 @@ jobs:
           python-version: "3.11"
       - name: Instalar librerias
         run: pip install pandas numpy requests
-      - name: Escanear
-        env:
-          TD_KEY: ${{ secrets.TD_KEY }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: python escaner.py
-      - name: Informe
-        run: python analizar.py > /dev/null
-      - name: Guardar datos
+      - name: Configurar git
         run: |
           git config user.name "escaner"
           git config user.email "escaner@users.noreply.github.com"
+      - name: Escanear (queda trabajando y corre justo al cerrar cada vela de 30 min)
+        env:
+          TD_KEY: ${{ secrets.TD_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python escaner.py --bucle
+      - name: Guardar datos pendientes
+        if: always()
+        run: |
           git add datos
           if ! git diff --staged --quiet; then
             git commit -m "datos $(date -u +'%Y-%m-%d %H:%M')"
