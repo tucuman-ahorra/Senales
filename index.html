@@ -53,9 +53,23 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
   </div>
   <div class="fila" style="margin-top:12px">
     <button id="act">Actualizar datos</button>
-    <label style="flex:none;min-width:0;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="auto"> cada 30 s</label>
+    <label style="flex:none;min-width:0;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="auto"> Actualizar solo al cerrar cada vela</label>
   </div>
   <small id="fuente"></small>
+</section>
+
+<section class="card">
+  <details id="conf"><summary>Conectar datos en vivo (recomendado)</summary>
+    <p class="sub" style="margin-top:8px">Con una clave gratuita de Twelve Data la descarga es mucho más estable. Es gratis y no pide tarjeta.</p>
+    <ol class="sub" style="padding-left:1.2em;margin:6px 0 10px">
+      <li>Entrá a <b>twelvedata.com</b> y tocá <b>Sign up</b> (registrate con tu mail).</li>
+      <li>Confirmá el mail y entrá a tu panel (<b>Dashboard</b>).</li>
+      <li>En <b>API Keys</b> copiá tu clave (letras y números).</li>
+      <li>Pegala abajo y tocá <b>Guardar</b>. Queda solo en tu celular.</li>
+    </ol>
+    <div class="fila"><label style="min-width:200px">Tu clave<input id="clave" type="text" autocomplete="off" spellcheck="false" placeholder="pegá la clave acá"></label><button class="sec" id="guardaClave" style="align-self:flex-end">Guardar</button></div>
+    <small id="estadoClave"></small>
+  </details>
 </section>
 
 <section class="card" id="resultado"><div class="senal"><div class="g">—</div><div class="m">Tocá “Actualizar datos”.</div></div></section>
@@ -86,7 +100,7 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
   <details><summary>Cómo se calcula y qué tan confiable es</summary>
   <p>Cada vela cerrada se compara con el promedio y el desvío de las últimas 20 velas. Si el cierre queda más de 2,5 desvíos <b>por debajo</b>, la señal es <b>comprar</b> (sube); si queda más de 2,5 <b>por encima</b>, <b>vender</b> (baja). La operación entra al abrir la vela siguiente y vence al cerrar esa vela. Es una señal <b>normal</b>. Si además el RSI14 está bajo 30 (o sobre 70) y el estocástico bajo 20 (o sobre 80), es <b>fuerte</b>; si además el desvío de 80 velas supera 1,5, es <b>muy fuerte</b>.</p>
   <p>Con 4 años de datos reales de EUR/USD, esto acertó entre 53% y 55% de las veces con pago del 90% (equilibrio: 52,6%). Es una ventaja <b>muy pequeña</b>: hay rachas de 10 o más pérdidas seguidas, y la diferencia entre la cotización de tu plataforma, el retraso al entrar y los empates pueden eliminarla.</p>
-  <p>Los datos en vivo vienen de Yahoo Finance con un pequeño retraso. Verificá siempre el precio en tu plataforma antes de operar.</p>
+  <p>Los datos en vivo vienen de Twelve Data (con tu clave gratuita) o de Yahoo Finance, con un pequeño retraso. Verificá siempre el precio en tu plataforma antes de operar.</p>
   </details>
 </section>
 <p class="sub">Solo para práctica con dinero ficticio. Las opciones binarias tienen alto riesgo de pérdida.</p>
@@ -125,24 +139,40 @@ function clasificar(z,rsi,st,completo){
   return {normal:normal,fuerte:fuerte};
 }
 
-/* ---------- datos en vivo (Yahoo 5 min -> 10/15 min) ---------- */
+/* ---------- datos en vivo: Twelve Data (con clave) o Yahoo (sin clave) -> velas de 5 min -> 10/15 min ---------- */
 var YURL="https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?interval=5m&range=5d";
 var RUTAS=[function(u){return u},function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u)},function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u)}];
+var CLAVE_TD="senales.td.v1";
+function claveTD(){try{return localStorage.getItem(CLAVE_TD)||""}catch(e){return""}}
 function conTiempo(url,ms){var c=new AbortController();var t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal,cache:"no-store"}).finally(function(){clearTimeout(t)})}
-async function bajar(){
-  var ultimo;
-  for(var i=0;i<RUTAS.length;i++){
-    try{var r=await conTiempo(RUTAS[i](YURL),9000); if(!r.ok)throw new Error("HTTP "+r.status);
-      var j=await r.json(); if(!j.chart||!j.chart.result)throw new Error("sin datos"); return j.chart.result[0];}
-    catch(e){ultimo=e}
-  }
-  throw ultimo||new Error("sin conexión");
+function msgError(e){var m=String(e&&e.message||e);if(/abort/i.test(m))return"tardó demasiado en responder";if(/Failed to fetch|NetworkError|Load failed/i.test(m))return"sin conexión o bloqueado por el navegador";return m}
+async function bajarTD(clave){
+  var u="https://api.twelvedata.com/time_series?symbol=EUR/USD&interval=5min&outputsize=900&timezone=UTC&order=ASC&apikey="+encodeURIComponent(clave);
+  var r=await conTiempo(u,15000); var j=await r.json();
+  if(j.status==="error"||!j.values)throw new Error("Twelve Data: "+(j.message||"respuesta inválida"));
+  return j.values.map(function(x){return{t:Date.parse(x.datetime.replace(" ","T")+"Z")/1000,o:+x.open,h:+x.high,l:+x.low,c:+x.close}}).filter(function(x){return isFinite(x.c)&&isFinite(x.t)}).sort(function(a,b){return a.t-b.t});
 }
-function agrupar(res,iv){
-  var ts=res.timestamp,q=res.indicators.quote[0],lado=iv*60,b={},orden=[];
-  for(var i=0;i<ts.length;i++){ if(q.close[i]==null||q.open[i]==null||q.high[i]==null||q.low[i]==null)continue;
-    var k=Math.floor(ts[i]/lado)*lado; if(!b[k]){b[k]={t:k,o:q.open[i],h:q.high[i],l:q.low[i],c:q.close[i],n:0};orden.push(k)}
-    b[k].c=q.close[i]; b[k].h=Math.max(b[k].h,q.high[i]); b[k].l=Math.min(b[k].l,q.low[i]); b[k].n++; }
+async function bajarYahoo(){
+  var errores=[];
+  for(var i=0;i<RUTAS.length;i++){
+    try{var r=await conTiempo(RUTAS[i](YURL),8000); if(!r.ok)throw new Error("HTTP "+r.status);
+      var j=await r.json(); if(!j.chart||!j.chart.result)throw new Error("sin datos"); var res=j.chart.result[0],q=res.indicators.quote[0],out=[];
+      for(var k=0;k<res.timestamp.length;k++){if(q.close[k]==null||q.open[k]==null||q.high[k]==null||q.low[k]==null)continue;out.push({t:res.timestamp[k],o:q.open[k],h:q.high[k],l:q.low[k],c:q.close[k]})}
+      return out;}
+    catch(e){errores.push(msgError(e))}
+  }
+  throw new Error("Yahoo no respondió ("+errores.join(" / ")+")");
+}
+async function bajar(){
+  var clave=claveTD();
+  if(clave){estado.origen="Twelve Data";return await bajarTD(clave)}
+  estado.origen="Yahoo Finance";return await bajarYahoo();
+}
+function agrupar(barras,iv){
+  var lado=iv*60,b={},orden=[];
+  barras.forEach(function(x){var k=Math.floor(x.t/lado)*lado;
+    if(!b[k]){b[k]={t:k,o:x.o,h:x.h,l:x.l,c:x.c,n:0};orden.push(k)}
+    b[k].c=x.c;b[k].h=Math.max(b[k].h,x.h);b[k].l=Math.min(b[k].l,x.l);b[k].n++});
   var necesarias=iv/5, ahora=Date.now()/1000, out=[];
   orden.sort(function(a,c){return a-c}).forEach(function(k){var x=b[k]; if(k+lado<=ahora && x.n>=necesarias-1) out.push(x)}); // solo velas cerradas
   return out;
@@ -151,14 +181,22 @@ function agrupar(res,iv){
 async function actualizar(){
   $("act").disabled=true; $("act").textContent="Descargando…"; $("fuente").textContent="";
   try{
-    var res=await bajar(); var v=agrupar(res,estado.iv);
-    if(v.length<22)throw new Error("pocas velas");
-    estado.velas=v.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}}); estado.fuente="Yahoo Finance · "+hora(Date.now())+" hs";
+    var barras=await bajar(); var v=agrupar(barras,estado.iv);
+    if(v.length<22)throw new Error("llegaron pocas velas ("+v.length+")");
+    estado.velas=v.map(function(x){return{t:x.t*1000,h:x.h,l:x.l,c:x.c}}); estado.fuente=estado.origen+" · "+hora(Date.now())+" hs";
     calcular();
   }catch(e){
-    $("fuente").textContent="No se pudo descargar ("+e.message+"). Probá de nuevo o cargá las velas a mano abajo.";
+    $("fuente").textContent="No se pudo descargar: "+msgError(e)+". "+(claveTD()?"Revisá tu clave de Twelve Data o probá de nuevo.":"Conectá la clave gratuita de arriba (más estable) o cargá las velas a mano.");
   }
   $("act").disabled=false; $("act").textContent="Actualizar datos";
+}
+/* actualización automática: solo unos segundos después de cada cierre de vela (pocas consultas) */
+var tAuto=null;
+function programar(){
+  clearTimeout(tAuto); if(!$("auto").checked)return;
+  var lado=estado.iv*60000,ahora=Date.now(),base=Math.floor(ahora/lado)*lado,cand=[4000,34000,64000].map(function(x){return base+x}).filter(function(t){return t>ahora+500});
+  var objetivo=cand.length?cand[0]:base+lado+4000;
+  tAuto=setTimeout(function(){estado.manual=false;actualizar().then(programar)},objetivo-ahora);
 }
 
 /* ---------- mostrar señal ---------- */
@@ -220,9 +258,9 @@ function historial(){
   var pago=+$("pago").value/100||.9,eq=1/(1+pago),filas="";
   [["muyfuerte","Muy fuerte ●●●"],["fuerte","Fuerte ●●○"],["normal","Normal ●○○"],["volalta","Normal + volatilidad alta"]].forEach(function(t){
     var h=HIST[estado.iv+"_"+t[0]],p=h.w/h.n,ci=wilson(h.w,h.n),ev=p*pago-(1-p);
-    var an=Object.keys(h.y).map(function(a){return h.y[a][0].toFixed(0)}).join(" / ");
-    filas+="<tr><td>"+t[1]+"</td><td class=num><b>"+pc(p)+"</b></td><td class=num>"+pc(ci[0])+"–"+pc(ci[1])+"</td><td class=num>"+(h.n/1000).toFixed(1).replace(".",",")+"</td><td class=num>"+(ev>=0?"+":"")+(ev*100).toFixed(1).replace(".",",")+"%</td><td class=num>"+an+"</td></tr>"});
-  $("hist").innerHTML="<p class=sub>Equilibrio con pago "+Math.round(pago*100)+"%: <b>"+pc(eq)+"</b>. Vencimiento: "+estado.iv+" min.</p><div style='overflow-x:auto'><table><tr><th>Nivel</th><th>Acierto</th><th>Rango</th><th>Señales/día</th><th>Ganancia</th><th>2022/23/24/25</th></tr>"+filas+"</table></div><small>Los niveles suman confirmaciones (RSI, estocástico, desvío de 80 velas). Las diferencias entre niveles son pequeñas frente al margen de error: el diario de tu demo decide cuál rinde mejor.</small>";
+    var an=Object.keys(h.y).map(function(a){return h.y[a][0].toFixed(0)}).join("/");
+    filas+="<tr><td><b>"+t[1]+"</b><br><small>"+(h.n/1000).toFixed(1).replace(".",",")+" señales/día · años "+an+"</small></td><td class=num><b>"+pc(p)+"</b></td><td class=num>"+pc(ci[0])+"<br>a "+pc(ci[1])+"</td><td class=num>"+(ev>=0?"+":"")+(ev*100).toFixed(1).replace(".",",")+"%</td></tr>"});
+  $("hist").innerHTML="<p class=sub>Equilibrio con pago "+Math.round(pago*100)+"%: <b>"+pc(eq)+"</b>. Vencimiento: "+estado.iv+" min.</p><table><tr><th>Nivel</th><th>Acierto</th><th>Rango</th><th>Ganancia</th></tr>"+filas+"</table><small>Los niveles suman confirmaciones (RSI, estocástico, desvío de 80 velas). Las diferencias entre niveles son pequeñas frente al margen de error: el diario de tu demo decide cuál rinde mejor.</small>";
 }
 
 /* ---------- diario de demo ---------- */
@@ -258,7 +296,11 @@ $("bor").onclick=function(){if($("bor").dataset.c==="1"){guardar([]);diario();$(
 $("iv").onchange=function(){estado.iv=+$("iv").value;estado.manual=false;estado.velas=[];historial();actualizar()};
 $("pago").oninput=function(){historial();diario()};
 $("act").onclick=function(){estado.manual=false;actualizar()};
-var timer=null;$("auto").onchange=function(){clearInterval(timer);if($("auto").checked)timer=setInterval(function(){estado.manual=false;actualizar()},30000)};
+$("auto").onchange=function(){programar();if($("auto").checked)$("fuente").textContent="Modo automático: se actualiza solo unos segundos después de cada cierre de vela."};
+$("guardaClave").onclick=function(){var k=$("clave").value.trim();try{if(k)localStorage.setItem(CLAVE_TD,k);else localStorage.removeItem(CLAVE_TD)}catch(e){}
+  $("estadoClave").textContent=k?"Clave guardada. Tocá “Actualizar datos”.":"Clave borrada: se usará Yahoo Finance.";$("clave").value=k?"••••••••"+k.slice(-4):""};
+if(claveTD()){$("clave").value="••••••••"+claveTD().slice(-4);$("estadoClave").textContent="Clave guardada en este celular."}else{$("conf").open=true}
+$("iv").addEventListener("change",programar);
 $("calcM").onclick=function(){var n=$("manual").value.replace(/,/g," ").split(/\s+/).map(parseFloat).filter(function(x){return isFinite(x)});
   if(n.length<20){$("fuente").textContent="Necesitás al menos 20 números.";return}
   var ahora=Date.now(),iv=estado.iv*60000,fin=Math.floor(ahora/iv)*iv; // última vela se asume recién cerrada
