@@ -82,15 +82,32 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left
 <section class="card">
   <h2>Mi diario de demo</h2>
   <p class="sub">Anotá cada operación que hagas en la demo. Es la única forma de saber si la ventaja se mantiene en tu plataforma.</p>
-  <div class="fila"><button id="reg" class="sec">Registrar la señal actual</button><button id="regM" class="sec">Registrar a mano</button></div>
+  <div class="fila"><label style="flex:none;min-width:150px">Mercado de la operación<select id="mk"><option value="real">Real (EUR/USD)</option><option value="otc">OTC (plataforma)</option></select></label></div>
+  <div class="fila" style="margin-top:8px"><button id="reg" class="sec">Registrar la señal actual</button><button id="regM" class="sec">Registrar a mano</button></div>
   <div id="diarioStats" style="margin-top:12px"></div>
   <div id="diarioLista"></div>
   <div class="fila" style="margin-top:10px"><button class="sec mini" id="exp">Copiar como texto</button><button class="sec mini" id="bor">Borrar diario</button></div>
 </section>
 
 <section class="card">
+  <h2>Simulador (dinero ficticio)</h2>
+  <p class="sub">Muestra qué rango de resultados es normal con un acierto dado. No predice: sirve para ver cuánto puede variar el azar y cuánto capital arriesgás.</p>
+  <div class="fila">
+    <label>Acierto %<input id="sAc" type="number" min="30" max="90" step="0.5" value="55"></label>
+    <label>Capital inicial<input id="sCap" type="number" min="10" step="10" value="1000"></label>
+    <label>Monto por operación<input id="sMonto" type="number" min="1" step="1" value="10"></label>
+  </div>
+  <div class="fila" style="margin-top:8px">
+    <label>Operaciones por día<input id="sOpd" type="number" min="1" max="50" step="1" value="3"></label>
+    <label>Días<input id="sDias" type="number" min="1" max="365" step="1" value="90"></label>
+  </div>
+  <div class="fila" style="margin-top:10px"><button id="sGo">Simular 2.000 veces</button><button id="sDiario" class="sec">Ver curva de mi diario</button></div>
+  <div id="sRes" style="margin-top:12px"></div><div id="sGraf"></div>
+</section>
+
+<section class="card">
   <details><summary>Cargar velas a mano (si falla la descarga)</summary>
-    <p class="sub" style="margin-top:8px">Pegá los <b>cierres</b> de las últimas 20 o más velas del intervalo elegido, separados por comas, espacios o renglones. El último número debe ser la última vela <b>ya cerrada</b>.</p>
+    <p class="sub" style="margin-top:8px"><b>Para OTC usá esta opción:</b> los precios OTC los genera tu plataforma y no existen en las fuentes de datos de esta herramienta. Copiá los cierres que ves en su gráfico (y elegí “OTC” en el diario al registrar). Pegá los <b>cierres</b> de las últimas 20 o más velas del intervalo elegido, separados por comas, espacios o renglones. El último número debe ser la última vela <b>ya cerrada</b>.</p>
     <textarea id="manual" placeholder="1.08512, 1.08490, 1.08477, ..."></textarea>
     <div class="fila" style="margin-top:8px"><button class="sec" id="calcM">Calcular señal</button></div>
   </details>
@@ -275,6 +292,8 @@ function diario(){
     +"<p class=sub style='margin-top:8px'>Rango razonable: "+(ci[0]*100).toFixed(0)+"% a "+(ci[1]*100).toFixed(0)+"%. Equilibrio: "+pc(eq)+".</p>"
     +"<div class=barra><i style='width:"+Math.min(100,n/300*100)+"%'></i></div><small>"+n+" de 300 operaciones para sacar una conclusión</small>";
     var por="";["muyfuerte","fuerte","normal"].forEach(function(k){var g=res.filter(function(x){return x.nivel===k});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;por+="<tr><td>"+NIV[k].n+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
+    var pm="";["real","otc"].forEach(function(k){var g=res.filter(function(x){return (x.mk||"real")===k});if(g.length){var gw=g.filter(function(x){return x.r==="g"}).length;pm+="<tr><td>"+(k==="otc"?"OTC":"Real")+"</td><td class=num>"+g.length+"</td><td class=num><b>"+pc(gw/g.length)+"</b></td></tr>"}});
+    if(pm)html+="<table style='margin-top:10px'><tr><th>Mercado</th><th>Operaciones</th><th>Acierto</th></tr>"+pm+"</table>";
     if(por)html+="<table style='margin-top:10px'><tr><th>Nivel de señal</th><th>Operaciones</th><th>Acierto</th></tr>"+por+"</table>";
     if(n>=50){var u=res.slice(-50),wu=u.filter(function(x){return x.r==="g"}).length;
       if(wu/50<0.5)html+="<div class=aviso>En tus últimas 50 operaciones acertaste "+Math.round(wu/50*100)+"%. Puede ser mala racha o que la ventaja no se sostenga en tu plataforma.</div>"}
@@ -283,15 +302,50 @@ function diario(){
   $("diarioStats").innerHTML=html;
   $("diarioLista").innerHTML=d.slice().reverse().slice(0,30).map(function(x){var idx=d.indexOf(x);
     var est=x.r?"<span class="+(x.r==="g"?"gano":"perdio")+">"+(x.r==="g"?"Ganó":"Perdió")+"</span>":"<span><button class='mini' data-i='"+idx+"' data-r='g'>Ganó</button> <button class='mini sec' data-i='"+idx+"' data-r='p'>Perdió</button></span>";
-    return "<div class=reg><span>"+fechaHora(x.t)+" · "+(x.d==="up"?"Compra ▲":"Venta ▼")+" · "+x.iv+" min"+(x.nivel?" · "+NIV[x.nivel].n.toLowerCase():"")+"</span>"+est+"</div>"}).join("");
+    return "<div class=reg><span>"+fechaHora(x.t)+" · "+(x.d==="up"?"Compra ▲":"Venta ▼")+" · "+x.iv+" min"+(x.nivel?" · "+NIV[x.nivel].n.toLowerCase():"")+(x.mk==="otc"?" · OTC":"")+"</span>"+est+"</div>"}).join("");
 }
 $("diarioLista").addEventListener("click",function(e){var b=e.target.closest("button[data-i]");if(!b)return;var d=leer();d[+b.dataset.i].r=b.dataset.r;guardar(d);diario()});
-$("reg").onclick=function(){var s=estado.señal;if(!s||!s.dir)return;var d=leer();d.push({t:s.cierreMs,d:s.dir,iv:s.iv,nivel:s.nivel,z:+s.z.toFixed(2),r:null});guardar(d);diario()};
-$("regM").onclick=function(){var d=leer();d.push({t:Date.now(),d:estado.señal&&estado.señal.dir||"up",iv:estado.iv,nivel:null,z:null,r:null});guardar(d);diario()};
-$("exp").onclick=function(){var t="fecha,direccion,vencimiento_min,nivel,z,resultado\n"+leer().map(function(x){return [new Date(x.t).toISOString(),x.d==="up"?"compra":"venta",x.iv,x.nivel||"",x.z==null?"":x.z,x.r==="g"?"gano":x.r==="p"?"perdio":"pendiente"].join(",")}).join("\n");
+$("reg").onclick=function(){var s=estado.señal;if(!s||!s.dir)return;var d=leer();d.push({t:s.cierreMs,d:s.dir,iv:s.iv,nivel:s.nivel,mk:$("mk").value,z:+s.z.toFixed(2),r:null});guardar(d);diario()};
+$("regM").onclick=function(){var d=leer();d.push({t:Date.now(),d:estado.señal&&estado.señal.dir||"up",iv:estado.iv,nivel:null,mk:$("mk").value,z:null,r:null});guardar(d);diario()};
+$("exp").onclick=function(){var t="fecha,direccion,vencimiento_min,nivel,mercado,z,resultado\n"+leer().map(function(x){return [new Date(x.t).toISOString(),x.d==="up"?"compra":"venta",x.iv,x.nivel||"",x.mk||"real",x.z==null?"":x.z,x.r==="g"?"gano":x.r==="p"?"perdio":"pendiente"].join(",")}).join("\n");
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){$("exp").textContent="Copiado ✓"},function(){});setTimeout(function(){$("exp").textContent="Copiar como texto"},2000)};
 $("bor").onclick=function(){if($("bor").dataset.c==="1"){guardar([]);diario();$("bor").textContent="Borrar diario";$("bor").dataset.c="0"}else{$("bor").dataset.c="1";$("bor").textContent="Tocá otra vez para confirmar";setTimeout(function(){$("bor").dataset.c="0";$("bor").textContent="Borrar diario"},3500)}};
 
+
+/* ---------- simulador ---------- */
+function curva(trayectos,mediana,cap,ancho,alto){
+  var W=360,H=190,P=8,n=mediana.length,mn=cap,mx=cap;
+  trayectos.forEach(function(t){t.forEach(function(v){mn=Math.min(mn,v);mx=Math.max(mx,v)})});
+  var X=function(i){return P+i*(W-2*P)/Math.max(1,n-1)},Y=function(v){return H-P-(v-mn)/((mx-mn)||1)*(H-2*P)};
+  var pl=function(t,est){return '<polyline points="'+t.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1)}).join(" ")+'" fill="none" '+est+'/>'};
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Trayectorias simuladas del capital">'+trayectos.map(function(t){return pl(t,'stroke="var(--sub)" stroke-opacity=".28" stroke-width="1"')}).join("")
+   +'<line x1="'+P+'" x2="'+(W-P)+'" y1="'+Y(cap).toFixed(1)+'" y2="'+Y(cap).toFixed(1)+'" stroke="var(--dn)" stroke-dasharray="4 3"/>'+pl(mediana,'stroke="var(--ac)" stroke-width="2.4"')+'</svg>';
+}
+$("sGo").onclick=function(){
+  var p=(+$("sAc").value)/100,pago=(+$("pago").value)/100||.9,cap=+$("sCap").value,mo=+$("sMonto").value,opd=Math.round(+$("sOpd").value),dias=Math.round(+$("sDias").value),N=opd*dias,T=2000;
+  if(!(p>0&&p<1)||!(cap>0)||!(mo>0)||N<1){$("sRes").innerHTML="<div class=aviso>Revisá los números ingresados.</div>";return}
+  var finales=[],quiebra=0,rachas=[],muestra=[],porPaso=[];for(var i=0;i<=N;i++)porPaso.push([]);
+  for(var t=0;t<T;t++){var c=cap,r=0,rm=0,ar=[c],q=false;
+    for(var i=0;i<N;i++){if(c<mo){q=true;ar.push(c);continue}
+      if(Math.random()<p){c+=mo*pago;r=0}else{c-=mo;r++;if(r>rm)rm=r}ar.push(c)}
+    finales.push(c);rachas.push(rm);if(q||c<mo)quiebra++;if(t<40)muestra.push(ar);for(var j=0;j<=N;j+=Math.max(1,Math.floor(N/60)))porPaso[j].push(ar[j])}
+  var ord=function(a,q){a=a.slice().sort(function(x,y){return x-y});return a[Math.min(a.length-1,Math.floor(q*a.length))]};
+  var med=[],paso=Math.max(1,Math.floor(N/60));for(var j=0;j<=N;j+=paso)med.push(ord(porPaso[j],.5));
+  var gana=finales.filter(function(v){return v>cap}).length/T,ev=p*pago-(1-p),m=function(x){return x.toLocaleString("es-AR",{maximumFractionDigits:0})};
+  var mu=muestra.map(function(a){var o=[];for(var j=0;j<=N;j+=paso)o.push(a[j]);return o});
+  $("sRes").innerHTML="<div class=grid2><div class=k><b class=num>$"+m(ord(finales,.5))+"</b><span>Capital final típico (mediana)</span></div><div class=k><b class=num>"+Math.round(gana*100)+"%</b><span>Terminan con ganancia</span></div>"
+   +"<div class=k><b class=num>$"+m(ord(finales,.1))+" a $"+m(ord(finales,.9))+"</b><span>Rango del 80% de los casos</span></div><div class=k><b class=num>"+ord(rachas,.5)+" (hasta "+ord(rachas,.95)+")</b><span>Racha de pérdidas seguidas, típica (y mala)</span></div></div>"
+   +"<p class=sub style='margin-top:8px'>"+N+" operaciones, ganancia esperada por operación: <b>"+(ev>=0?"+":"")+(ev*100).toFixed(1).replace(".",",")+"%</b> del monto. Pérdida total del capital: "+Math.round(quiebra/T*100)+"% de los casos. Líneas grises: 40 ejemplos; azul: caso típico; roja: capital inicial.</p>";
+  $("sGraf").innerHTML=curva(mu,med,cap);
+};
+$("sDiario").onclick=function(){
+  var res=leer().filter(function(x){return x.r}),pago=(+$("pago").value)/100||.9,cap=+$("sCap").value,mo=+$("sMonto").value;
+  if(!res.length){$("sRes").innerHTML="<div class=aviso>Todavía no tenés operaciones resueltas en el diario.</div>";$("sGraf").innerHTML="";return}
+  var c=cap,ar=[cap],pico=cap,dd=0;res.forEach(function(x){c+=x.r==="g"?mo*pago:-mo;ar.push(c);pico=Math.max(pico,c);dd=Math.max(dd,pico-c)});
+  var m=function(x){return x.toLocaleString("es-AR",{maximumFractionDigits:0})};
+  $("sRes").innerHTML="<div class=grid2><div class=k><b class=num>$"+m(c)+"</b><span>Capital ficticio actual</span></div><div class=k><b class=num>$"+m(dd)+"</b><span>Mayor caída desde un pico</span></div></div><p class=sub style='margin-top:8px'>Con "+res.length+" operaciones de tu diario, a $"+mo+" cada una.</p>";
+  $("sGraf").innerHTML=curva([],ar,cap);
+};
 /* ---------- eventos ---------- */
 $("iv").onchange=function(){estado.iv=+$("iv").value;estado.manual=false;estado.velas=[];historial();actualizar()};
 $("pago").oninput=function(){historial();diario()};

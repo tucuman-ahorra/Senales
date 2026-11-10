@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+"""
+Escáner multipar. Cada vez que corre:
+  1) baja velas de 5 min de cada par (Twelve Data con clave; si falla, Yahoo Finance),
+  2) las agrupa en velas de 15 min (u otras, ver pares.json) y deja solo las ya cerradas,
+  3) calcula los indicadores y el nivel de señal de CADA vela,
+  4) registra, para cada vela nueva, cuál habría sido el resultado de entrar en la vela siguiente.
+Guarda todo en datos/AAAA-MM.csv. No necesita que nadie anote nada: el resultado es teórico y automático.
+Las velas ya registradas no se repiten, y si se saltea una corrida, la siguiente recupera lo que faltó.
+"""
+import os, sys, json, time
+from pathlib import Path
+import numpy as np, pandas as pd, requests
+
+RAIZ = Path(__file__).resolve().parent
+DATOS = RAIZ / "datos"
+UM = 2.5
+COLUMNAS = ["par", "min", "t_senal", "hora_utc", "dsem", "z20", "z80", "rsi14", "estoc14", "vol",
+            "dir", "nivel", "entrada", "salida", "sube", "empate"]
+
+# ---------------------------------------------------------------- indicadores
+def rsi(c, n=14):
+    d = c.diff()
+    up = d.clip(lower=0).ewm(alpha=1 / n, adjust=False).mean()
+    dn = (-d.clip(upper=0)).ewm(alpha=1 / n, adjust=False).mean()
+    return 100 - 100 / (1 + up / (dn + 1e-12))
+
+def indicadores(v):
+    o, h, l, c = v.o, v.h, v.l, v.c
+    out = pd.DataFrame(index=v.index)
+    out["z20"] = (c - c.rolling(20).mean()) / c.rolling(20).std()
+    out["z80"] = (c - c.rolling(80).mean()) / c.rolling(80).std()
+    out["rsi14"] = rsi(c, 14)
+    ll, hh = l.rolling(14).min(), h.rolling(14).max()
+    out["estoc14"] = 100 * (c - ll) / (hh - ll + 1e-12)
+    atr = (h - l).rolling(14).mean()
+    out["vol"] = atr / atr.rolling(100).mean()
+    return out
+
+def clasificar(z20, z80, rsi14, est):
+    """Devuelve (dir, nivel). dir: 1 = comprar (sube), -1 = vender (baja), 0 = sin señal.
+    nivel: 0 ninguno, 1 normal, 2 fuerte, 3 muy fuerte (mismas reglas que la herramienta web)."""
+    if z20 <= -UM: d = 1
+    elif z20 >= UM: d = -1
+    else: return 0, 0
+    nivel = 1
+    ok = (rsi14 < 30 and est < 20) if d == 1 else (rsi14 > 70 and est > 80)
+    if ok:
+        nivel = 2
+        if (z80 <= -1.5) if d == 1 else (z80 >= 1.5): nivel = 3
+    return d, nivel
+
+# ---------------------------------------------------------------- datos de entrada
+def agrupar(b5, k, ahora):
+    g = b5.resample(f"{k}min", label="left", closed="left").agg(
+        o=("o", "first"), h=("h", "max"), l=("l", "min"), c=("c", "last"), n=("c", "count"))
+    g = g[g.n == k // 5]                                   # solo velas completas
+    g = g[g.index + pd.Timedelta(minutes=k) <= ahora]      # solo velas ya cerradas
+    return g.drop(columns="n")
+
+def bajar_td(simbolo, clave):
+    r = requests.get("https://api.twelvedata.com/time_series", timeout=40, params=dict(
+        symbol=simbolo, interval="5min", outputsize=1500, timezone="UTC", order="ASC", apikey=clave))
+    j = r.json()
+    if j.get("status") == "error" or "values" not in j:
+        raise RuntimeError("Twelve Data: " + str(j.get("message", "respuesta inválida")))
+    d = pd.DataFrame(j["values"])
+    d["t"] = pd.to_datetime(d["datetime"], utc=True)
+    for c in ("open", "high", "low", "close"): d[c] = d[c].astype(float)
+    return d.rename(columns={"open": "o", "high": "h", "low": "l", "close": "c"}).set_index("t")[["o", "h", "l", "c"]].sort_index()
+
+def bajar_yahoo(simbolo):
+    u = f"https://query1.finance.yahoo.com/v8/finance/chart/{simbolo}?interval=5m&range=7d"
+    r = requests.get(u, timeout=40, headers={"User-Agent": "Mozilla/5.0"})
+    r.raise_for_status()
+    res = r.json()["chart"]["result"][0]; q = res["indicators"]["quote"][0]
+    d = pd.DataFrame({"o": q["open"], "h": q["high"], "l": q["low"], "c": q["close"]},
+                     index=pd.to_datetime(res["timestamp"], unit="s", utc=True)).dropna()
+    return d
+
+def bajar(par, clave):
+    if clave:
+        try: return bajar_td(par["nombre"], clave)
+        except Exception as e: print(f"  aviso {par['nombre']}: {e}; pruebo con Yahoo", flush=True)
+    return bajar_yahoo(par["yahoo"])
+
+# ---------------------------------------------------------------- registro
+def cargar_estado():
+    f = DATOS / "estado.json"
+    return json.loads(f.read_text()) if f.exists() else {}
+
+def guardar_estado(e):
+    DATOS.mkdir(exist_ok=True)
+    (DATOS / "estado.json").write_text(json.dumps(e, indent=1, sort_keys=True))
+
+def procesar(nombre, b5, k, ahora, estado, escribir=True):
+    """Agrega al registro las velas nuevas. Devuelve la lista de filas nuevas."""
+    g = agrupar(b5, k, ahora)
+    if len(g) < 120:
+        print(f"  {nombre} {k}min: pocas velas ({len(g)})", flush=True); return []
+    ind = indicadores(g); t = g.index
+    clave = f"{nombre}|{k}"
+    ultimo = pd.Timestamp(estado[clave]) if clave in estado else None
+    filas = []
+    for i in range(len(g) - 1):
+        ent = t[i + 1]
+        if ultimo is not None and ent <= ultimo: continue
+        if ent - t[i] != pd.Timedelta(minutes=k): continue         # sin huecos
+        r = ind.iloc[i]
+        if r.isna().any(): continue
+        d, nivel = clasificar(r.z20, r.z80, r.rsi14, r.estoc14)
+        o1, c1 = g.o.iloc[i + 1], g.c.iloc[i + 1]
+        filas.append([nombre, k, (t[i] + pd.Timedelta(minutes=k)).strftime("%Y-%m-%d %H:%M"), ent.hour, ent.dayofweek,
+                      round(r.z20, 3), round(r.z80, 3), round(r.rsi14, 2), round(r.estoc14, 2), round(r.vol, 3),
+                      d, nivel, o1, c1, int(c1 > o1), int(c1 == o1)])
+    if len(g) >= 2: estado[clave] = t[-1].isoformat()
+    if escribir and filas: escribir_filas(filas)
+    return filas
+
+def escribir_filas(filas):
+    DATOS.mkdir(exist_ok=True)
+    df = pd.DataFrame(filas, columns=COLUMNAS)
+    df["mes"] = df["t_senal"].str[:7]
+    for mes, parte in df.groupby("mes"):
+        f = DATOS / f"{mes}.csv"
+        parte = parte.drop(columns="mes")
+        if f.exists():
+            ya = pd.read_csv(f, usecols=["par", "min", "t_senal"])
+            claves = set(zip(ya.par, ya["min"], ya.t_senal))
+            parte = parte[[(a, b, c) not in claves for a, b, c in zip(parte.par, parte["min"], parte.t_senal)]]
+        if len(parte):
+            parte.to_csv(f, mode="a", header=not f.exists(), index=False)
+
+def main():
+    cfg = json.loads((RAIZ / "pares.json").read_text())
+    clave = os.environ.get("TD_KEY", "").strip()
+    print("Fuente:", "Twelve Data (con Yahoo de respaldo)" if clave else "Yahoo Finance (sin clave)", flush=True)
+    ahora = pd.Timestamp.now(tz="UTC"); estado = cargar_estado(); total = 0
+    for p in cfg["pares"]:
+        try:
+            b5 = bajar(p, clave)
+            for k in cfg["intervalos"]:
+                n = len(procesar(p["nombre"], b5, k, ahora, estado)); total += n
+                print(f"  {p['nombre']} {k}min: {n} velas nuevas", flush=True)
+        except Exception as e:
+            print(f"  ERROR {p['nombre']}: {e}", flush=True)
+        time.sleep(cfg.get("pausa_seg", 9))
+    guardar_estado(estado)
+    print("Listo. Filas nuevas:", total)
+
+if __name__ == "__main__":
+    main()
