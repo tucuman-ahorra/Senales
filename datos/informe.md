@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-11 07:15** (UTC) · 7 días con datos · 5.739 velas registradas · 236 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-11 07:45** (UTC) · 7 días con datos · 5.758 velas registradas · 237 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -17,10 +17,10 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | NZD/USD | 23 | 43.5% | 25.6% a 63.2% | -17.4% | muy pocos datos |
 | EUR/USD | 23 | 39.1% | 22.2% a 59.2% | -25.7% | muy pocos datos |
 | GBP/JPY | 22 | 50.0% | 30.7% a 69.3% | -5.0% | muy pocos datos |
-| EUR/GBP | 21 | 52.4% | 32.4% a 71.7% | -0.5% | muy pocos datos |
+| EUR/GBP | 22 | 50.0% | 30.7% a 69.3% | -5.0% | muy pocos datos |
 | AUD/USD | 20 | 25.0% | 11.2% a 46.9% | -52.5% | muy pocos datos |
 | USD/CAD | 18 | 50.0% | 29.0% a 71.0% | -5.0% | muy pocos datos |
-| TODOS LOS PARES | 236 | 43.6% | 37.5% a 50.0% | -17.1% | por debajo del equilibrio |
+| TODOS LOS PARES | 237 | 43.5% | 37.3% a 49.8% | -17.4% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -61,13 +61,13 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
 | 00:00 a 06:00 | 21:00 a 03:00 | 70 | 42.9% |
-| 06:00 a 13:00 | 03:00 a 10:00 | 67 | 55.2% |
+| 06:00 a 13:00 | 03:00 a 10:00 | 68 | 54.4% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 92 | 33.7% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 7 | 71.4% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 2.9, EUR/GBP 3.0, EUR/JPY 3.4, EUR/USD 3.3, GBP/JPY 3.1, GBP/USD 3.9, NZD/USD 3.3, USD/CAD 2.6, USD/CHF 4.0, USD/JPY 4.3. **Total: 33.7 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 2.9, EUR/GBP 3.1, EUR/JPY 3.4, EUR/USD 3.3, GBP/JPY 3.1, GBP/USD 3.9, NZD/USD 3.3, USD/CAD 2.6, USD/CHF 4.0, USD/JPY 4.3. **Total: 33.9 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
