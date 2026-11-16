@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-16 01:15** (UTC) · 10 días con datos · 8.232 velas registradas · 360 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-16 01:45** (UTC) · 10 días con datos · 8.252 velas registradas · 361 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -16,11 +16,11 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | USD/CHF | 39 | 48.7% | 33.9% a 63.8% | -7.4% | no se puede afirmar nada todavía |
 | EUR/JPY | 39 | 46.2% | 31.6% a 61.4% | -12.3% | no se puede afirmar nada todavía |
 | EUR/USD | 39 | 38.5% | 24.9% a 54.1% | -26.9% | no se puede afirmar nada todavía |
-| AUD/USD | 32 | 25.0% | 13.3% a 42.1% | -52.5% | por debajo del equilibrio |
+| AUD/USD | 33 | 24.2% | 12.8% a 41.0% | -53.9% | por debajo del equilibrio |
 | EUR/GBP | 31 | 51.6% | 34.8% a 68.0% | -1.9% | no se puede afirmar nada todavía |
 | NZD/USD | 30 | 50.0% | 33.2% a 66.8% | -5.0% | no se puede afirmar nada todavía |
 | USD/CAD | 28 | 53.6% | 35.8% a 70.5% | +1.8% | muy pocos datos |
-| TODOS LOS PARES | 360 | 45.0% | 39.9% a 50.2% | -14.5% | por debajo del equilibrio |
+| TODOS LOS PARES | 361 | 44.9% | 39.8% a 50.0% | -14.7% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -31,12 +31,12 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | USD/JPY | 18 | 50.0% | 29.0% a 71.0% | -5.0% | muy pocos datos |
 | GBP/USD | 17 | 23.5% | 9.6% a 47.3% | -55.3% | muy pocos datos |
 | USD/CHF | 16 | 37.5% | 18.5% a 61.4% | -28.7% | muy pocos datos |
-| AUD/USD | 15 | 33.3% | 15.2% a 58.3% | -36.7% | muy pocos datos |
+| AUD/USD | 16 | 31.2% | 14.2% a 55.6% | -40.6% | muy pocos datos |
 | EUR/JPY | 13 | 46.2% | 23.2% a 70.9% | -12.3% | muy pocos datos |
 | USD/CAD | 12 | 33.3% | 13.8% a 60.9% | -36.7% | muy pocos datos |
 | GBP/JPY | 9 | 44.4% | 18.9% a 73.3% | -15.6% | muy pocos datos |
 | EUR/GBP | 5 | 80.0% | 37.6% a 96.4% | +52.0% | muy pocos datos |
-| TODOS LOS PARES | 146 | 41.1% | 33.4% a 49.2% | -21.9% | por debajo del equilibrio |
+| TODOS LOS PARES | 147 | 40.8% | 33.2% a 48.9% | -22.4% | por debajo del equilibrio |
 
 ## Muy fuerte (nivel 3)
 
@@ -47,12 +47,12 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | USD/JPY | 15 | 53.3% | 30.1% a 75.2% | +1.3% | muy pocos datos |
 | NZD/USD | 15 | 33.3% | 15.2% a 58.3% | -36.7% | muy pocos datos |
 | USD/CHF | 14 | 28.6% | 11.7% a 54.6% | -45.7% | muy pocos datos |
-| AUD/USD | 11 | 36.4% | 15.2% a 64.6% | -30.9% | muy pocos datos |
+| AUD/USD | 12 | 33.3% | 13.8% a 60.9% | -36.7% | muy pocos datos |
 | EUR/JPY | 11 | 36.4% | 15.2% a 64.6% | -30.9% | muy pocos datos |
 | USD/CAD | 10 | 40.0% | 16.8% a 68.7% | -24.0% | muy pocos datos |
 | GBP/JPY | 6 | 16.7% | 3.0% a 56.4% | -68.3% | muy pocos datos |
 | EUR/GBP | 5 | 80.0% | 37.6% a 96.4% | +52.0% | muy pocos datos |
-| TODOS LOS PARES | 123 | 36.6% | 28.6% a 45.4% | -30.5% | por debajo del equilibrio |
+| TODOS LOS PARES | 124 | 36.3% | 28.4% a 45.0% | -31.0% | por debajo del equilibrio |
 
 ## Chequeo por franja horaria (todas las señales, todos los pares)
 
@@ -60,14 +60,14 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 95 | 44.2% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 96 | 43.8% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 90 | 58.9% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 147 | 34.7% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 28 | 57.1% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.2, EUR/GBP 3.1, EUR/JPY 3.9, EUR/USD 3.9, GBP/JPY 4.0, GBP/USD 4.0, NZD/USD 3.0, USD/CAD 2.8, USD/CHF 3.9, USD/JPY 4.2. **Total: 36.0 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.3, EUR/GBP 3.1, EUR/JPY 3.9, EUR/USD 3.9, GBP/JPY 4.0, GBP/USD 4.0, NZD/USD 3.0, USD/CAD 2.8, USD/CHF 3.9, USD/JPY 4.2. **Total: 36.1 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
