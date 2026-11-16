@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-16 21:45** (UTC) · 10 días con datos · 9.052 velas registradas · 380 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-16 22:15** (UTC) · 10 días con datos · 9.072 velas registradas · 383 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -12,15 +12,15 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 |---|---|---|---|---|---|
 | USD/JPY | 43 | 53.5% | 38.9% a 67.5% | +1.6% | no se puede afirmar nada todavía |
 | GBP/USD | 42 | 38.1% | 25.0% a 53.2% | -27.6% | no se puede afirmar nada todavía |
-| GBP/JPY | 41 | 51.2% | 36.5% a 65.7% | -2.7% | no se puede afirmar nada todavía |
+| USD/CHF | 41 | 46.3% | 32.1% a 61.3% | -12.0% | no se puede afirmar nada todavía |
 | EUR/JPY | 41 | 46.3% | 32.1% a 61.3% | -12.0% | no se puede afirmar nada todavía |
+| GBP/JPY | 41 | 51.2% | 36.5% a 65.7% | -2.7% | no se puede afirmar nada todavía |
 | EUR/USD | 40 | 37.5% | 24.2% a 53.0% | -28.7% | no se puede afirmar nada todavía |
-| USD/CHF | 40 | 47.5% | 32.9% a 62.5% | -9.8% | no se puede afirmar nada todavía |
 | AUD/USD | 37 | 29.7% | 17.5% a 45.8% | -43.5% | por debajo del equilibrio |
-| EUR/GBP | 33 | 54.5% | 38.0% a 70.2% | +3.6% | no se puede afirmar nada todavía |
+| EUR/GBP | 35 | 51.4% | 35.6% a 67.0% | -2.3% | no se puede afirmar nada todavía |
 | NZD/USD | 33 | 51.5% | 35.2% a 67.5% | -2.1% | no se puede afirmar nada todavía |
 | USD/CAD | 30 | 56.7% | 39.2% a 72.6% | +7.7% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 380 | 46.3% | 41.4% a 51.3% | -12.0% | por debajo del equilibrio |
+| TODOS LOS PARES | 383 | 46.0% | 41.0% a 51.0% | -12.7% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -35,8 +35,8 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | EUR/JPY | 14 | 50.0% | 26.8% a 73.2% | -5.0% | muy pocos datos |
 | USD/CAD | 12 | 33.3% | 13.8% a 60.9% | -36.7% | muy pocos datos |
 | GBP/JPY | 10 | 50.0% | 23.7% a 76.3% | -5.0% | muy pocos datos |
-| EUR/GBP | 5 | 80.0% | 37.6% a 96.4% | +52.0% | muy pocos datos |
-| TODOS LOS PARES | 153 | 42.5% | 34.9% a 50.4% | -19.3% | por debajo del equilibrio |
+| EUR/GBP | 7 | 57.1% | 25.0% a 84.2% | +8.6% | muy pocos datos |
+| TODOS LOS PARES | 155 | 41.9% | 34.5% a 49.8% | -20.3% | por debajo del equilibrio |
 
 ## Muy fuerte (nivel 3)
 
@@ -50,9 +50,9 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | USD/CHF | 14 | 28.6% | 11.7% a 54.6% | -45.7% | muy pocos datos |
 | EUR/JPY | 12 | 41.7% | 19.3% a 68.0% | -20.8% | muy pocos datos |
 | USD/CAD | 10 | 40.0% | 16.8% a 68.7% | -24.0% | muy pocos datos |
+| EUR/GBP | 7 | 57.1% | 25.0% a 84.2% | +8.6% | muy pocos datos |
 | GBP/JPY | 7 | 28.6% | 8.2% a 64.1% | -45.7% | muy pocos datos |
-| EUR/GBP | 5 | 80.0% | 37.6% a 96.4% | +52.0% | muy pocos datos |
-| TODOS LOS PARES | 130 | 38.5% | 30.5% a 47.0% | -26.9% | por debajo del equilibrio |
+| TODOS LOS PARES | 132 | 37.9% | 30.1% a 46.4% | -28.0% | por debajo del equilibrio |
 
 ## Chequeo por franja horaria (todas las señales, todos los pares)
 
@@ -63,11 +63,11 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 | 00:00 a 06:00 | 21:00 a 03:00 | 100 | 45.0% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 95 | 61.1% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 157 | 36.3% |
-| 21:00 a 24:00 | 18:00 a 21:00 | 28 | 57.1% |
+| 21:00 a 24:00 | 18:00 a 21:00 | 31 | 51.6% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.7, EUR/GBP 3.3, EUR/JPY 4.1, EUR/USD 4.0, GBP/JPY 4.1, GBP/USD 4.2, NZD/USD 3.3, USD/CAD 3.0, USD/CHF 4.0, USD/JPY 4.3. **Total: 38.0 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.7, EUR/GBP 3.5, EUR/JPY 4.1, EUR/USD 4.0, GBP/JPY 4.1, GBP/USD 4.2, NZD/USD 3.3, USD/CAD 3.0, USD/CHF 4.1, USD/JPY 4.3. **Total: 38.3 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
