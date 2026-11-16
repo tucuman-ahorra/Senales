@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-13 22:15** (UTC) · 9 días con datos · 8.186 velas registradas · 360 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-16 00:15** (UTC) · 10 días con datos · 8.192 velas registradas · 360 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -67,7 +67,7 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.6, EUR/GBP 3.4, EUR/JPY 4.3, EUR/USD 4.3, GBP/JPY 4.4, GBP/USD 4.4, NZD/USD 3.3, USD/CAD 3.1, USD/CHF 4.3, USD/JPY 4.7. **Total: 40.0 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.2, EUR/GBP 3.1, EUR/JPY 3.9, EUR/USD 3.9, GBP/JPY 4.0, GBP/USD 4.0, NZD/USD 3.0, USD/CAD 2.8, USD/CHF 3.9, USD/JPY 4.2. **Total: 36.0 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
