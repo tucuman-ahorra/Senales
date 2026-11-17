@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-17 05:45** (UTC) · 11 días con datos · 9.339 velas registradas · 392 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-17 06:15** (UTC) · 11 días con datos · 9.358 velas registradas · 392 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -74,7 +74,7 @@ Promedio de señales por día (todos los niveles): AUD/USD 3.5, EUR/GBP 3.2, EUR
 
 Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, que el modelo nunca vio al entrenar), con su resultado teórico. **Esta es la prueba real.**
 
-**Total:** 86 señales · acierto **50.0%** (rango 39.7% a 60.3%) · ganancia esperada -5.0% por operación · equilibrio 52.6% → muy pocas señales: todavía no se puede afirmar nada (hacen falta 300 o más).
+**Total:** 87 señales · acierto **50.6%** (rango 40.3% a 60.8%) · ganancia esperada -3.9% por operación · equilibrio 52.6% → muy pocas señales: todavía no se puede afirmar nada (hacen falta 300 o más).
 
 | Par | Señales | Acierto |
 |---|---|---|
@@ -86,6 +86,6 @@ Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, q
 | GBP/USD | 15 | 66.7% |
 | NZD/USD | 13 | 30.8% |
 | USD/CAD | 3 | 0.0% |
-| USD/CHF | 4 | 50.0% |
+| USD/CHF | 5 | 60.0% |
 | USD/JPY | 3 | 33.3% |
 
