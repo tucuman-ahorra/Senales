@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-17 02:15** (UTC) · 11 días con datos · 9.198 velas registradas · 388 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-17 02:45** (UTC) · 11 días con datos · 9.218 velas registradas · 389 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -18,9 +18,9 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | EUR/USD | 40 | 37.5% | 24.2% a 53.0% | -28.7% | no se puede afirmar nada todavía |
 | AUD/USD | 37 | 29.7% | 17.5% a 45.8% | -43.5% | por debajo del equilibrio |
 | EUR/GBP | 35 | 51.4% | 35.6% a 67.0% | -2.3% | no se puede afirmar nada todavía |
-| NZD/USD | 33 | 51.5% | 35.2% a 67.5% | -2.1% | no se puede afirmar nada todavía |
+| NZD/USD | 34 | 50.0% | 34.1% a 65.9% | -5.0% | no se puede afirmar nada todavía |
 | USD/CAD | 32 | 56.2% | 39.3% a 71.8% | +6.9% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 388 | 46.1% | 41.2% a 51.1% | -12.3% | por debajo del equilibrio |
+| TODOS LOS PARES | 389 | 46.0% | 41.1% a 51.0% | -12.6% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -60,14 +60,14 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 105 | 45.7% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 106 | 45.3% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 95 | 61.1% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 157 | 36.3% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 31 | 51.6% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.4, EUR/GBP 3.2, EUR/JPY 3.7, EUR/USD 3.6, GBP/JPY 3.7, GBP/USD 3.9, NZD/USD 3.0, USD/CAD 2.9, USD/CHF 3.7, USD/JPY 4.1. **Total: 35.3 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.4, EUR/GBP 3.2, EUR/JPY 3.7, EUR/USD 3.6, GBP/JPY 3.7, GBP/USD 3.9, NZD/USD 3.1, USD/CAD 2.9, USD/CHF 3.7, USD/JPY 4.1. **Total: 35.4 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
