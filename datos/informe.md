@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-17 08:15** (UTC) · 11 días con datos · 9.438 velas registradas · 394 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-17 08:45** (UTC) · 11 días con datos · 9.458 velas registradas · 395 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -19,8 +19,8 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | AUD/USD | 38 | 31.6% | 19.1% a 47.5% | -40.0% | por debajo del equilibrio |
 | EUR/GBP | 36 | 52.8% | 37.0% a 68.0% | +0.3% | no se puede afirmar nada todavía |
 | NZD/USD | 34 | 50.0% | 34.1% a 65.9% | -5.0% | no se puede afirmar nada todavía |
-| USD/CAD | 32 | 56.2% | 39.3% a 71.8% | +6.9% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 394 | 46.7% | 41.8% a 51.6% | -11.3% | por debajo del equilibrio |
+| USD/CAD | 33 | 57.6% | 40.8% a 72.8% | +9.4% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 395 | 46.8% | 42.0% a 51.8% | -11.0% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -61,13 +61,13 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
 | 00:00 a 06:00 | 21:00 a 03:00 | 109 | 46.8% |
-| 06:00 a 13:00 | 03:00 a 10:00 | 97 | 61.9% |
+| 06:00 a 13:00 | 03:00 a 10:00 | 98 | 62.2% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 157 | 36.3% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 31 | 51.6% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.5, EUR/GBP 3.3, EUR/JPY 3.8, EUR/USD 3.7, GBP/JPY 3.8, GBP/USD 3.9, NZD/USD 3.1, USD/CAD 2.9, USD/CHF 3.7, USD/JPY 4.1. **Total: 35.8 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.5, EUR/GBP 3.3, EUR/JPY 3.8, EUR/USD 3.7, GBP/JPY 3.8, GBP/USD 3.9, NZD/USD 3.1, USD/CAD 3.0, USD/CHF 3.7, USD/JPY 4.1. **Total: 35.9 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
