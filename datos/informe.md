@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-17 02:45** (UTC) · 11 días con datos · 9.218 velas registradas · 389 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-17 03:15** (UTC) · 11 días con datos · 9.238 velas registradas · 389 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
