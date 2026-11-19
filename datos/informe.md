@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-19 15:15** (UTC) · 13 días con datos · 11.587 velas registradas · 461 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-19 15:45** (UTC) · 13 días con datos · 11.607 velas registradas · 471 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -10,49 +10,49 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 
 | Par | Señales | Acierto | Rango | Ganancia esperada | Lectura |
 |---|---|---|---|---|---|
-| GBP/JPY | 50 | 52.0% | 38.5% a 65.2% | -1.2% | no se puede afirmar nada todavía |
-| EUR/JPY | 50 | 46.0% | 33.0% a 59.6% | -12.6% | no se puede afirmar nada todavía |
-| USD/JPY | 49 | 55.1% | 41.3% a 68.1% | +4.7% | no se puede afirmar nada todavía |
-| AUD/USD | 48 | 33.3% | 21.7% a 47.5% | -36.7% | por debajo del equilibrio |
-| GBP/USD | 48 | 43.8% | 30.7% a 57.7% | -16.9% | no se puede afirmar nada todavía |
+| GBP/JPY | 52 | 51.9% | 38.7% a 64.9% | -1.3% | no se puede afirmar nada todavía |
+| EUR/JPY | 51 | 45.1% | 32.3% a 58.6% | -14.3% | no se puede afirmar nada todavía |
+| GBP/USD | 50 | 44.0% | 31.2% a 57.7% | -16.4% | no se puede afirmar nada todavía |
+| AUD/USD | 50 | 32.0% | 20.8% a 45.8% | -39.2% | por debajo del equilibrio |
+| USD/JPY | 50 | 56.0% | 42.3% a 68.8% | +6.4% | no se puede afirmar nada todavía |
 | USD/CHF | 47 | 51.1% | 37.2% a 64.7% | -3.0% | no se puede afirmar nada todavía |
+| NZD/USD | 46 | 45.7% | 32.2% a 59.8% | -13.3% | no se puede afirmar nada todavía |
 | EUR/GBP | 45 | 57.8% | 43.3% a 71.0% | +9.8% | no se puede afirmar nada todavía |
 | EUR/USD | 44 | 40.9% | 27.7% a 55.6% | -22.3% | no se puede afirmar nada todavía |
-| NZD/USD | 44 | 47.7% | 33.8% a 62.1% | -9.3% | no se puede afirmar nada todavía |
 | USD/CAD | 36 | 58.3% | 42.2% a 72.9% | +10.8% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 461 | 48.4% | 43.8% a 52.9% | -8.1% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 471 | 48.0% | 43.5% a 52.5% | -8.8% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
 | Par | Señales | Acierto | Rango | Ganancia esperada | Lectura |
 |---|---|---|---|---|---|
 | EUR/USD | 24 | 50.0% | 31.4% a 68.6% | -5.0% | muy pocos datos |
-| AUD/USD | 21 | 42.9% | 24.5% a 63.5% | -18.6% | muy pocos datos |
+| AUD/USD | 22 | 40.9% | 23.3% a 61.3% | -22.3% | muy pocos datos |
+| NZD/USD | 22 | 36.4% | 19.7% a 57.0% | -30.9% | muy pocos datos |
 | USD/JPY | 21 | 57.1% | 36.5% a 75.5% | +8.6% | muy pocos datos |
-| NZD/USD | 21 | 38.1% | 20.8% a 59.1% | -27.6% | muy pocos datos |
+| GBP/USD | 20 | 35.0% | 18.1% a 56.7% | -33.5% | muy pocos datos |
 | EUR/JPY | 20 | 50.0% | 29.9% a 70.1% | -5.0% | muy pocos datos |
 | USD/CHF | 19 | 47.4% | 27.3% a 68.3% | -10.0% | muy pocos datos |
-| GBP/USD | 19 | 31.6% | 15.4% a 54.0% | -40.0% | muy pocos datos |
+| GBP/JPY | 13 | 53.8% | 29.1% a 76.8% | +2.3% | muy pocos datos |
 | USD/CAD | 12 | 33.3% | 13.8% a 60.9% | -36.7% | muy pocos datos |
-| GBP/JPY | 11 | 54.5% | 28.0% a 78.7% | +3.6% | muy pocos datos |
 | EUR/GBP | 9 | 55.6% | 26.7% a 81.1% | +5.6% | muy pocos datos |
-| TODOS LOS PARES | 177 | 45.8% | 38.6% a 53.1% | -13.1% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 182 | 45.6% | 38.5% a 52.9% | -13.4% | no se puede afirmar nada todavía |
 
 ## Muy fuerte (nivel 3)
 
 | Par | Señales | Acierto | Rango | Ganancia esperada | Lectura |
 |---|---|---|---|---|---|
 | EUR/USD | 22 | 45.5% | 26.9% a 65.3% | -13.6% | muy pocos datos |
-| NZD/USD | 18 | 33.3% | 16.3% a 56.3% | -36.7% | muy pocos datos |
+| GBP/USD | 18 | 27.8% | 12.5% a 50.9% | -47.2% | muy pocos datos |
 | USD/JPY | 18 | 61.1% | 38.6% a 79.7% | +16.1% | muy pocos datos |
-| AUD/USD | 17 | 47.1% | 26.2% a 69.0% | -10.6% | muy pocos datos |
+| NZD/USD | 18 | 33.3% | 16.3% a 56.3% | -36.7% | muy pocos datos |
 | USD/CHF | 17 | 41.2% | 21.6% a 64.0% | -21.8% | muy pocos datos |
+| AUD/USD | 17 | 47.1% | 26.2% a 69.0% | -10.6% | muy pocos datos |
 | EUR/JPY | 17 | 41.2% | 21.6% a 64.0% | -21.8% | muy pocos datos |
-| GBP/USD | 17 | 23.5% | 9.6% a 47.3% | -55.3% | muy pocos datos |
 | USD/CAD | 10 | 40.0% | 16.8% a 68.7% | -24.0% | muy pocos datos |
 | EUR/GBP | 9 | 55.6% | 26.7% a 81.1% | +5.6% | muy pocos datos |
 | GBP/JPY | 8 | 37.5% | 13.7% a 69.4% | -28.7% | muy pocos datos |
-| TODOS LOS PARES | 153 | 42.5% | 34.9% a 50.4% | -19.3% | por debajo del equilibrio |
+| TODOS LOS PARES | 154 | 42.9% | 35.3% a 50.8% | -18.6% | por debajo del equilibrio |
 
 ## Chequeo por franja horaria (todas las señales, todos los pares)
 
@@ -62,12 +62,12 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 |---|---|---|---|
 | 00:00 a 06:00 | 21:00 a 03:00 | 122 | 49.2% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 125 | 60.8% |
-| 13:00 a 21:00 | 10:00 a 18:00 | 178 | 37.6% |
+| 13:00 a 21:00 | 10:00 a 18:00 | 188 | 37.2% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 36 | 55.6% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.7, EUR/GBP 3.5, EUR/JPY 3.8, EUR/USD 3.4, GBP/JPY 3.8, GBP/USD 3.7, NZD/USD 3.4, USD/CAD 2.8, USD/CHF 3.6, USD/JPY 3.8. **Total: 35.5 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.8, EUR/GBP 3.5, EUR/JPY 3.9, EUR/USD 3.4, GBP/JPY 4.0, GBP/USD 3.8, NZD/USD 3.5, USD/CAD 2.8, USD/CHF 3.6, USD/JPY 3.8. **Total: 36.2 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
