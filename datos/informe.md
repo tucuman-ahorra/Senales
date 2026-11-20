@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-20 00:15** (UTC) · 14 días con datos · 11.913 velas registradas · 474 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-20 00:45** (UTC) · 14 días con datos · 11.933 velas registradas · 475 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -14,13 +14,13 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | AUD/USD | 51 | 31.4% | 20.3% a 45.0% | -40.4% | por debajo del equilibrio |
 | GBP/USD | 51 | 45.1% | 32.3% a 58.6% | -14.3% | no se puede afirmar nada todavía |
 | EUR/JPY | 51 | 45.1% | 32.3% a 58.6% | -14.3% | no se puede afirmar nada todavía |
-| USD/JPY | 50 | 56.0% | 42.3% a 68.8% | +6.4% | no se puede afirmar nada todavía |
+| USD/JPY | 51 | 54.9% | 41.4% a 67.7% | +4.3% | no se puede afirmar nada todavía |
 | USD/CHF | 47 | 51.1% | 37.2% a 64.7% | -3.0% | no se puede afirmar nada todavía |
 | NZD/USD | 46 | 45.7% | 32.2% a 59.8% | -13.3% | no se puede afirmar nada todavía |
 | EUR/GBP | 45 | 57.8% | 43.3% a 71.0% | +9.8% | no se puede afirmar nada todavía |
 | EUR/USD | 45 | 42.2% | 29.0% a 56.7% | -19.8% | no se puede afirmar nada todavía |
 | USD/CAD | 36 | 58.3% | 42.2% a 72.9% | +10.8% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 474 | 48.1% | 43.6% a 52.6% | -8.6% | por debajo del equilibrio |
+| TODOS LOS PARES | 475 | 48.0% | 43.5% a 52.5% | -8.8% | por debajo del equilibrio |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -60,7 +60,7 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 122 | 49.2% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 123 | 48.8% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 125 | 60.8% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 189 | 37.0% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 38 | 57.9% |
@@ -74,13 +74,13 @@ Promedio de señales por día (todos los niveles): AUD/USD 3.6, EUR/GBP 3.2, EUR
 
 Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, que el modelo nunca vio al entrenar), con su resultado teórico. **Esta es la prueba real.**
 
-**Total:** 111 señales · acierto **50.5%** (rango 41.3% a 59.6%) · ganancia esperada -4.1% por operación · equilibrio 52.6% → no se puede afirmar nada todavía.
+**Total:** 112 señales · acierto **50.0%** (rango 40.9% a 59.1%) · ganancia esperada -5.0% por operación · equilibrio 52.6% → no se puede afirmar nada todavía.
 
 | Par | Señales | Acierto |
 |---|---|---|
 | AUD/USD | 16 | 56.2% |
 | EUR/GBP | 14 | 57.1% |
-| EUR/JPY | 8 | 62.5% |
+| EUR/JPY | 9 | 55.6% |
 | EUR/USD | 23 | 39.1% |
 | GBP/JPY | 5 | 40.0% |
 | GBP/USD | 19 | 73.7% |
