@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-24 04:45** (UTC) · 16 días con datos · 13.873 velas registradas · 524 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-24 05:15** (UTC) · 16 días con datos · 13.893 velas registradas · 525 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -14,13 +14,13 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | GBP/JPY | 57 | 54.4% | 41.6% a 66.6% | +3.3% | no se puede afirmar nada todavía |
 | EUR/JPY | 56 | 46.4% | 34.0% a 59.3% | -11.8% | no se puede afirmar nada todavía |
 | AUD/USD | 55 | 32.7% | 21.8% a 45.9% | -37.8% | por debajo del equilibrio |
+| EUR/GBP | 55 | 56.4% | 43.3% a 68.6% | +7.1% | no se puede afirmar nada todavía |
 | GBP/USD | 55 | 47.3% | 34.7% a 60.2% | -10.2% | no se puede afirmar nada todavía |
-| EUR/GBP | 54 | 57.4% | 44.2% a 69.7% | +9.1% | no se puede afirmar nada todavía |
 | USD/CHF | 52 | 51.9% | 38.7% a 64.9% | -1.3% | no se puede afirmar nada todavía |
 | EUR/USD | 49 | 40.8% | 28.2% a 54.8% | -22.4% | no se puede afirmar nada todavía |
 | NZD/USD | 47 | 46.8% | 33.3% a 60.8% | -11.1% | no se puede afirmar nada todavía |
 | USD/CAD | 38 | 55.3% | 39.7% a 69.9% | +5.0% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 524 | 48.7% | 44.4% a 52.9% | -7.5% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 525 | 48.6% | 44.3% a 52.8% | -7.7% | no se puede afirmar nada todavía |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -60,7 +60,7 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 134 | 50.7% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 135 | 50.4% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 144 | 58.3% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 203 | 37.4% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 43 | 62.8% |
