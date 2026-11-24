@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-24 01:15** (UTC) · 16 días con datos · 13.733 velas registradas · 519 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-24 01:45** (UTC) · 16 días con datos · 13.753 velas registradas · 524 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -10,17 +10,17 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 
 | Par | Señales | Acierto | Rango | Ganancia esperada | Lectura |
 |---|---|---|---|---|---|
-| USD/JPY | 60 | 53.3% | 40.9% a 65.4% | +1.3% | no se puede afirmar nada todavía |
+| USD/JPY | 61 | 54.1% | 41.7% a 66.0% | +2.8% | no se puede afirmar nada todavía |
 | GBP/JPY | 57 | 54.4% | 41.6% a 66.6% | +3.3% | no se puede afirmar nada todavía |
 | EUR/JPY | 56 | 46.4% | 34.0% a 59.3% | -11.8% | no se puede afirmar nada todavía |
 | AUD/USD | 55 | 32.7% | 21.8% a 45.9% | -37.8% | por debajo del equilibrio |
+| GBP/USD | 55 | 47.3% | 34.7% a 60.2% | -10.2% | no se puede afirmar nada todavía |
 | EUR/GBP | 54 | 57.4% | 44.2% a 69.7% | +9.1% | no se puede afirmar nada todavía |
-| GBP/USD | 54 | 46.3% | 33.7% a 59.4% | -12.0% | no se puede afirmar nada todavía |
-| USD/CHF | 51 | 51.0% | 37.7% a 64.1% | -3.1% | no se puede afirmar nada todavía |
-| EUR/USD | 48 | 39.6% | 27.0% a 53.7% | -24.8% | no se puede afirmar nada todavía |
-| NZD/USD | 46 | 45.7% | 32.2% a 59.8% | -13.3% | no se puede afirmar nada todavía |
+| USD/CHF | 52 | 51.9% | 38.7% a 64.9% | -1.3% | no se puede afirmar nada todavía |
+| EUR/USD | 49 | 40.8% | 28.2% a 54.8% | -22.4% | no se puede afirmar nada todavía |
+| NZD/USD | 47 | 46.8% | 33.3% a 60.8% | -11.1% | no se puede afirmar nada todavía |
 | USD/CAD | 38 | 55.3% | 39.7% a 69.9% | +5.0% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 519 | 48.2% | 43.9% a 52.5% | -8.5% | por debajo del equilibrio |
+| TODOS LOS PARES | 524 | 48.7% | 44.4% a 52.9% | -7.5% | no se puede afirmar nada todavía |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -60,25 +60,25 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 129 | 48.8% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 134 | 50.7% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 144 | 58.3% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 203 | 37.4% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 43 | 62.8% |
 
 ## Cuántas señales entran por día
 
-Promedio de señales por día (todos los niveles): AUD/USD 3.4, EUR/GBP 3.4, EUR/JPY 3.5, EUR/USD 3.0, GBP/JPY 3.6, GBP/USD 3.4, NZD/USD 2.9, USD/CAD 2.4, USD/CHF 3.2, USD/JPY 3.8. **Total: 32.4 por día.**
+Promedio de señales por día (todos los niveles): AUD/USD 3.4, EUR/GBP 3.4, EUR/JPY 3.5, EUR/USD 3.1, GBP/JPY 3.6, GBP/USD 3.4, NZD/USD 2.9, USD/CAD 2.4, USD/CHF 3.2, USD/JPY 3.8. **Total: 32.8 por día.**
 
 > Los números de esta página son resultados *teóricos* (entrada al abrir la vela siguiente, vencimiento al cerrarla, empate = pérdida). No incluyen spread, retrasos ni diferencias de precio de tu plataforma. Ningún resultado de acá es garantía de ganancia.
 ## Modelo de 30 minutos (en vivo)
 
 Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, que el modelo nunca vio al entrenar), con su resultado teórico. **Esta es la prueba real.**
 
-**Total:** 124 señales · acierto **49.2%** (rango 40.6% a 57.9%) · ganancia esperada -6.5% por operación · equilibrio 52.6% → no se puede afirmar nada todavía.
+**Total:** 126 señales · acierto **49.2%** (rango 40.6% a 57.8%) · ganancia esperada -6.5% por operación · equilibrio 52.6% → no se puede afirmar nada todavía.
 
 | Par | Señales | Acierto |
 |---|---|---|
-| AUD/USD | 17 | 58.8% |
+| AUD/USD | 18 | 55.6% |
 | EUR/GBP | 17 | 52.9% |
 | EUR/JPY | 10 | 50.0% |
 | EUR/USD | 26 | 42.3% |
@@ -87,5 +87,5 @@ Cada señal que el modelo marcó en datos recientes (todos posteriores a 2025, q
 | NZD/USD | 16 | 25.0% |
 | USD/CAD | 4 | 25.0% |
 | USD/CHF | 5 | 60.0% |
-| USD/JPY | 4 | 50.0% |
+| USD/JPY | 5 | 60.0% |
 
