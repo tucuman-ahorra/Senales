@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-25 02:15** (UTC) · 17 días con datos · 14.697 velas registradas · 550 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-25 02:45** (UTC) · 17 días con datos · 14.717 velas registradas · 551 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -19,8 +19,8 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | USD/CHF | 55 | 54.5% | 41.5% a 67.0% | +3.6% | no se puede afirmar nada todavía |
 | EUR/USD | 51 | 41.2% | 28.8% a 54.8% | -21.8% | no se puede afirmar nada todavía |
 | NZD/USD | 47 | 46.8% | 33.3% a 60.8% | -11.1% | no se puede afirmar nada todavía |
-| USD/CAD | 42 | 57.1% | 42.2% a 70.9% | +8.6% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 550 | 49.3% | 45.1% a 53.4% | -6.4% | no se puede afirmar nada todavía |
+| USD/CAD | 43 | 58.1% | 43.3% a 71.6% | +10.5% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 551 | 49.4% | 45.2% a 53.5% | -6.2% | no se puede afirmar nada todavía |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -60,7 +60,7 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 
 | Franja (UTC) | Equivale en Tucumán | Señales | Acierto |
 |---|---|---|---|
-| 00:00 a 06:00 | 21:00 a 03:00 | 142 | 50.0% |
+| 00:00 a 06:00 | 21:00 a 03:00 | 143 | 50.3% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 156 | 59.6% |
 | 13:00 a 21:00 | 10:00 a 18:00 | 207 | 37.7% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 45 | 64.4% |
