@@ -1,6 +1,6 @@
 # Informe automático del escáner
 
-Datos desde **2026-11-03 04:15** hasta **2026-11-26 15:15** (UTC) · 18 días con datos · 16.143 velas registradas · 597 señales.
+Datos desde **2026-11-03 04:15** hasta **2026-11-26 15:45** (UTC) · 18 días con datos · 16.164 velas registradas · 598 señales.
 
 Equilibrio con pago 90%: **52.6%**. Un resultado por debajo no gana plata; hace falta superarlo con margen.
 
@@ -18,9 +18,9 @@ Cómo leerlo: *Rango* es el margen razonable del acierto real dado el tamaño de
 | AUD/USD | 62 | 35.5% | 24.7% a 47.9% | -32.6% | por debajo del equilibrio |
 | EUR/USD | 57 | 38.6% | 27.1% a 51.6% | -26.7% | por debajo del equilibrio |
 | USD/CHF | 57 | 56.1% | 43.3% a 68.2% | +6.7% | no se puede afirmar nada todavía |
-| NZD/USD | 52 | 46.2% | 33.3% a 59.5% | -12.3% | no se puede afirmar nada todavía |
+| NZD/USD | 53 | 47.2% | 34.4% a 60.3% | -10.4% | no se puede afirmar nada todavía |
 | USD/CAD | 45 | 55.6% | 41.2% a 69.1% | +5.6% | no se puede afirmar nada todavía |
-| TODOS LOS PARES | 597 | 49.7% | 45.8% a 53.7% | -5.5% | no se puede afirmar nada todavía |
+| TODOS LOS PARES | 598 | 49.8% | 45.8% a 53.8% | -5.3% | no se puede afirmar nada todavía |
 
 ## Fuerte o mejor (nivel ≥ 2)
 
@@ -62,7 +62,7 @@ Si el acierto se concentra en una sola franja, sobre todo la de cierre diario (2
 |---|---|---|---|
 | 00:00 a 06:00 | 21:00 a 03:00 | 152 | 51.3% |
 | 06:00 a 13:00 | 03:00 a 10:00 | 172 | 61.0% |
-| 13:00 a 21:00 | 10:00 a 18:00 | 228 | 37.3% |
+| 13:00 a 21:00 | 10:00 a 18:00 | 229 | 37.6% |
 | 21:00 a 24:00 | 18:00 a 21:00 | 45 | 64.4% |
 
 ## Cuántas señales entran por día
